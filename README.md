@@ -1,1 +1,1 @@
-# StrategieCourseASC2016!
+# StrategieCourseASC2016
