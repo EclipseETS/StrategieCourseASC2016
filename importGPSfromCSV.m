@@ -78,7 +78,7 @@ fclose(fileID);
 % script.
 
 %% Allocate imported array to column variable names
-data.type = dataArray{:, 1};             % Type de données (pas utilisé)
+%data.type = dataArray{:, 1};             % Type de données (pas utilisé)
 data.latitude = dataArray{:, 2};         % Coordonnées décimale
 data.longitude = dataArray{:, 3};        % Coordonnées décimale
 data.altitude = dataArray{:, 4};         % Altitude en mètre
