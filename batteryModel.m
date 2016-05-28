@@ -27,7 +27,7 @@ Ebatt_max = Ecell_max*nb_cell_serie;
 Ibatt_max = Crate_max*Ccell*nb_cell_para;   % Courant de la batterie à 2 C
 Ibatt_nom = Ccell*nb_cell_para;             % Courant de la batterie à 1 C
 
-Battery_capacity = Ccell*nb_cell_total;     % kWh
+
 Rint = nb_cell_serie/nb_cell_para*Rcell;    % ohm
 
 
@@ -82,6 +82,8 @@ end
     
 Vbatt = Ebatt-Rint*Ibatt;
 
+% Cell_full_capacity = sum(continous_discharge_1C).* mean(diff(continous_capacity));   % Capacité de la batterie à 1C
+% Battery_full_capacity = nb_cell_total * Cell_full_capacity;
 
 continous_discharge_0p2C = polyval(p1, continous_capacity);
 continous_discharge_1C = polyval(p2, continous_capacity);
@@ -93,6 +95,8 @@ plot(discharge_1C(:,1), discharge_1C(:,2), 'sb')
 plot(continous_capacity,continous_discharge_1C, 'b')
 plot(discharge_2C(:,1), discharge_2C(:,2), 'sg')
 plot(continous_capacity,continous_discharge_2C, 'g')
+xlabel('Capacité (AH)')
+ylabel('Tension (V)')
 
 save('Eclipse9_cells_discharge.mat', 'p1', 'p2', 'p3');
 

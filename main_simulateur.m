@@ -115,5 +115,3 @@ figure, hold on
 plot(etape1.distance_interval)
 plot([0; diff(etape1.distance)*1000], 'r')
 plot(etape1.distance_interval-[0; diff(etape1.distance)*1000], 'm')
-
-

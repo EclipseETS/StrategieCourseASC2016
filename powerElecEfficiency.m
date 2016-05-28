@@ -71,7 +71,11 @@ Drive_efficiency_estimation = 0.95;
 Pbatt_estimee = motorInputPower ./ Drive_efficiency_estimation;
 Ibatt = zeros(size(Pbatt_estimee));
 for k=1:length(Pbatt_estimee)
-    Ibatt(k) = max(roots([-Rint, Ebatt(k), Pbatt_estimee(k)]));    
+    Ibatt(k) = max(roots([-Rint, Ebatt(k), Pbatt_estimee(k)]));  
+    if isreal(Ibatt(k)) == 0
+        disp('FUCK')
+        k
+    end
 end
 
 Vbus = Ebatt-Rint.*Ibatt;
