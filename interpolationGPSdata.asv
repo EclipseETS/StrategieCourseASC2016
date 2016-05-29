@@ -47,11 +47,11 @@ end
 for field = fieldnames(newData)'
     % Prétraitement de la pente (slope) à l'aide d'un FIR rectangulaire (30 échantillons de large)
     for k=1:length(newData.(field{1}).slope)
-        newData.(field{1}).altitude(k) = mean(newData.(field{1}).altitude(max([1 k-30]):k));
+        newData.(field{1}).altitude2(k) = mean(newData.(field{1}).altitude(max([1 k-30]):k));
     end
-    newData.(field{1}).slope = zeros(size(newData.(field{1}).slope));
+    newData.(field{1}).slope2 = zeros(size(newData.(field{1}).slope));
     for k=2:length(newData.(field{1}).slope)
-        newData.(field{1}).slope(k) = 100*(newData.(field{1}).altitude(k)-newData.(field{1}).altitude(k-1))/(newData.(field{1}).distance_interval(k));
+        newData.(field{1}).slope2(k) = 100*(newData.(field{1}).altitude(k)-newData.(field{1}).altitude(k-1))/(newData.(field{1}).distance_interval(k));
     end
 end
 
@@ -61,6 +61,8 @@ etape3 = newData.etape3;
 etape4 = newData.etape4;
 
 save('etapesASC2016_continuous.mat', 'etape1', 'etape2', 'etape3', 'etape4');
+
+
 
 %% Figures pour validation
 figure, hold on, title('Interpolation des coordonnées GPS')

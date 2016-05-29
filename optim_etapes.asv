@@ -14,7 +14,7 @@ clc, clear all, close all
 %% IMPORTATION DES DONNÉES EN FORMAT .MAT DE L'ASC2016
 load('etapesASC2016_continuous.mat')
 
-parcours = etape1;
+parcours = [etape1 etape2;
 
 distance_totale = parcours.distance(end);   % km
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
@@ -28,7 +28,7 @@ end
 
 % Contraintes du parcours
 vitesse_min = 20/3.6;   % m/s (60 km/h)
-vitesse_moy = 50/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+vitesse_moy = 40/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
 vitesse_max = 80/3.5;   % m/s (105 km/h)
 vitesse_ini = 0;        % m/s
 accel_max = 0.03;        % m/s^2
@@ -100,7 +100,7 @@ for k=2:nbPoints
     profil_force_traction(k) = min(profil_force_tot(k), couple_max*nb_moteur/rayon_roue);    
     profil_accel(k) = (profil_force_traction(k)-force_opposition_tot(k))/masse_totale;
     
-    if (profil_accel(k)~= 0)
+    if (profil_accel(k)> 0)
         temps_interval(k) = parcours.distance_interval(k) / (profil_vitesse(k-1)+ profil_accel(k)/2 );
         %temps_interval(k) = sqrt(2.*parcours.distance_interval(k)./abs(profil_accel(k)));
     else
@@ -130,8 +130,8 @@ profil_force_moteurs = profil_force_traction';
 profil_force_moteurs(profil_force_moteurs<0) = 0;
 profil_couple_moteurs = profil_force_moteurs.*rayon_roue;
 radSpeed = profil_vitesse./rayon_roue;
-tempAmbiant = 300;
-tempWinding = 300;
+tempAmbiant = 300;  % Température ambiante (Kelvin)
+tempWinding = 300;  % Température bobinage (Kelvin)
 [efficacite_moteur, efficacite_drive, efficacite_battery, outTempWinding] = powerElecEfficiency(profil_couple_moteurs/2, radSpeed, tempAmbiant, tempWinding, SoC);
 puissance_moteur = profil_force_moteurs.*parcours.distance_interval./temps_interval;
 puissance_fournie = profil_force_moteurs.*parcours.distance_interval./efficacite_moteur./efficacite_drive;

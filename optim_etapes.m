@@ -14,17 +14,18 @@ clc, clear all, close all
 %% IMPORTATION DES DONNÉES EN FORMAT .MAT DE L'ASC2016
 load('etapesASC2016_continuous.mat')
 
-parcours = etape1;
+parcours = etape4;
 
 distance_totale = parcours.distance(end);   % km
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
 
-% Calcul manuel de la pente puisque la parcours.slope semble contenir n'importe quoi
-deniveles = [0; diff(parcours.altitude)];           % TODO : Inclure dans le fichier 'importGPSfromCSV.m'
-parcours.pente = 100*deniveles./parcours.distance_interval;
-for k=1:length(nbPoints)
-    parcours.pente(k) = mean(parcours.pente(max([1 k-20]):k));
-end
+% Nouvellement inclus dans le fichier interpolationGPSdata.m
+% % Calcul manuel de la pente puisque la parcours.slope semble contenir n'importe quoi
+% deniveles = [0; diff(parcours.altitude)];           % TODO : Inclure dans le fichier 'importGPSfromCSV.m'
+% parcours.pente = 100*deniveles./parcours.distance_interval;
+% for k=1:length(nbPoints)
+%     parcours.pente(k) = mean(parcours.pente(max([1 k-20]):k));
+% end
 
 % Contraintes du parcours
 vitesse_min = 20/3.6;   % m/s (60 km/h)
