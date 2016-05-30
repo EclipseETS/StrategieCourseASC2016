@@ -98,5 +98,8 @@ plot(continous_capacity,continous_discharge_2C, 'g')
 xlabel('Capacité (AH)')
 ylabel('Tension (V)')
 
-save('Eclipse9_cells_discharge.mat', 'p1', 'p2', 'p3');
+decharge0C2 = p1;
+decharge1C = p2;
+decharge2C = p3;
+save('Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
 

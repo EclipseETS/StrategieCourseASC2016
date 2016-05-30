@@ -1,9 +1,8 @@
-function [efficiencyMotor, efficiencyDrive, batteryEfficiency, outTempWinding] = powerElecEfficiency(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC)
+function [efficiencyMotors, efficiencyDrive, batteryEfficiency, outTempWinding] = powerElecEfficiency(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC, cellModel)
 
 %% Éclipse 9
-%  Modèle du moteur
-%  Permet de calculer l'efficacité du moteur CSiro pour un point
-%  d'opération précis
+%  powerElecEfficiency.m
+%  Permet de calculer l'efficacité de la chaîne de traction de la voiture solaire Éclipse 9
 %  
 %  Les paramètres proviennent du document Application Notes pour un moteur
 %  Marand (CSiro)
@@ -31,21 +30,25 @@ function [efficiencyMotor, efficiencyDrive, batteryEfficiency, outTempWinding] =
 % Modèle Steady-State
 %tempAmbiant = 300; % K initial value (27°C)
 %tempWinding = 300; % K initial value (27°C)
+torqueUnmoteur = actualTorque/2;    % Nm
 tempMagnet = 0.5*(tempAmbiant + tempWinding); % K
 magnetB = 1.32-(1.2e-3)*(tempMagnet-293);  % T
-phCurrentRMS = 0.561.*magnetB.*actualTorque; % Arms
+phCurrentRMS = 0.561.*magnetB.*torqueUnmoteur; % Arms
 windingRes = 0.0575*(1+0.0039*(tempWinding-293)); % ohm
 copperLoss = 3*phCurrentRMS.^2*windingRes; % W
 eddyCurrentLoss = ((9.602e-6).*(magnetB.*radSpeed).^2)./windingRes; % W
 windingLoss = (170.4e-6).*radSpeed.^2; % W
 outTempWinding = 0.455*(windingLoss + eddyCurrentLoss) + tempAmbiant; % K
-mecPower = actualTorque.*radSpeed;   % W
-motorInputPower = mecPower+copperLoss+eddyCurrentLoss+windingLoss; % W
-efficiencyMotor = mecPower./ motorInputPower; % Percent
+mecPowerDeuxMoteurs = actualTorque.*radSpeed;   % W
+totalMotorsInputPower = mecPowerDeuxMoteurs+2*(copperLoss+eddyCurrentLoss+windingLoss); % W
+efficiencyMotors = mecPowerDeuxMoteurs./ totalMotorsInputPower; % Percent
 
 
 %% Modèle de la batterie
-load('Eclipse9_cells_discharge.mat', 'p1', 'p2', 'p3'); % Importation des courbes de décharge des batteries
+%load('Eclipse9_cells_discharge.mat', 'p1', 'p2', 'p3'); % Importation des courbes de décharge des batteries
+decharge0C2 = cellModel.decharge0C2;
+decharge1C = cellModel.decharge1C;
+decharge2C = cellModel.decharge2C;
 
 nb_cell_serie = 38;
 nb_cell_para = 11;
@@ -65,24 +68,23 @@ Battery_capacity = Ccell*nb_cell_total;     % kWh
 Rint = nb_cell_serie/nb_cell_para*Rcell;    % ohm
 
 capacite_restante = Ccell * (1-SoC);    % Ah
-Ebatt = polyval(p1, capacite_restante); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
+Ebatt = nb_cell_serie*polyval(decharge0C2, capacite_restante); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
 
 Drive_efficiency_estimation = 0.95;
-Pbatt_estimee = motorInputPower ./ Drive_efficiency_estimation;
+Pbatt_estimee = totalMotorsInputPower ./ Drive_efficiency_estimation;
 Ibatt = zeros(size(Pbatt_estimee));
 for k=1:length(Pbatt_estimee)
     Ibatt(k) = max(roots([-Rint, Ebatt(k), Pbatt_estimee(k)]));  
     if isreal(Ibatt(k)) == 0
         disp('FUCK')
-        k
     end
 end
 
-Vbus = Ebatt-Rint.*Ibatt;
+Vbus = Ebatt-Rint.*Ibatt;   % V
 
-batteryLoss = Rint.*Ibatt.^2;
-batteryPower = Ebatt.*Ibatt;
-batteryEfficiency = (batteryPower - batteryLoss) ./ batteryPower;
+batteryLoss = Rint.*Ibatt.^2;   % W
+batteryPower = Ebatt.*Ibatt;    % W
+batteryEfficiency = (batteryPower - batteryLoss) ./ batteryPower;   % (%)
 
 %% Modèle de l'onduleur Tritium WaveSculptor22
 %Vbus = 150; % V ********************** TO DO : Remplacer par le modèle de la batterie *******************************
@@ -92,6 +94,10 @@ beta = 1.8153E-2; % constant component of the switching loss (per unit of bus vo
 Cfeq = 1.5625E-4; % (F) equivalent capacitance*frequency product of the entire controller
 Req = 1.0800E-2; % (ohm) equivalent resistance of the entire controller
 
-driveLoss = Req.*phCurrentRMS.^2+(alpha.*phCurrentRMS+beta).*Vbus+Cfeq.*Vbus.^2; % W
-driveInputPower = motorInputPower+driveLoss;
-efficiencyDrive = motorInputPower./driveInputPower;
+driveLoss = Req.*phCurrentRMS.^2 +(alpha.*phCurrentRMS+beta).*Vbus + Cfeq.*Vbus.^2; % W
+driveInputPower = totalMotorsInputPower+driveLoss;    % W
+efficiencyDrive = totalMotorsInputPower./driveInputPower; % (%)
+if efficiencyDrive < 0.1
+    disp('CACA')
+end
+

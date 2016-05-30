@@ -11,10 +11,13 @@
 
 clc, clear all, close all
 
+%% Importation du modèle des cellules NCR18650BF
+cellModel = load('Eclipse9_cells_discharge.mat'); % Importation des courbes de décharge des batteries
+
 %% IMPORTATION DES DONNÉES EN FORMAT .MAT DE L'ASC2016
 load('etapesASC2016_continuous.mat')
-
-parcours = etape4;
+% Choix du parcours (etape1, etape2, etape3 ou etape4)
+parcours = etape1;
 
 distance_totale = parcours.distance(end);   % km
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
@@ -22,20 +25,21 @@ nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulat
 % Nouvellement inclus dans le fichier interpolationGPSdata.m
 % % Calcul manuel de la pente puisque la parcours.slope semble contenir n'importe quoi
 % deniveles = [0; diff(parcours.altitude)];           % TODO : Inclure dans le fichier 'importGPSfromCSV.m'
-% parcours.pente = 100*deniveles./parcours.distance_interval;
+% parcours.slope = 100*deniveles./parcours.distance_interval;
 % for k=1:length(nbPoints)
-%     parcours.pente(k) = mean(parcours.pente(max([1 k-20]):k));
+%     parcours.slope(k) = mean(parcours.slope(max([1 k-20]):k));
 % end
 
 % Contraintes du parcours
 vitesse_min = 20/3.6;   % m/s (60 km/h)
-vitesse_moy = 40/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
-vitesse_max = 80/3.5;   % m/s (105 km/h)
+vitesse_moy = 48/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+vitesse_max = 100/3.5;   % m/s (105 km/h)
 vitesse_ini = 0;        % m/s
-accel_max = 0.03;        % m/s^2
-decel_nom = -0.1;      % m/s^2
-SoC_ini = 1.00;          % Initial State of Charge (%)
-SoC_final = 0.10;        % Final State of Charge (%)
+accel_nom = 0.03;       % m/s^2
+accel_max = 1;          % m/s^2
+decel_nom = -0.03;       % m/s^2
+SoC_ini = 1.00;         % Initial State of Charge (%)
+SoC_final = 0.10;       % Final State of Charge (%)
 
 % Paramètres du véhicule Éclipse 9
 masse_totale = 225;     % kg
@@ -50,6 +54,8 @@ hauteur_roue = 0.3;    % m                                 ****** À VÉRIFIER ***
 % Constantes physiques
 const_grav = 9.81;      % m/s^2
 mv_air = 1.15;     % kg/m^3
+tempAmbiant = 300;  % Température ambiante (Kelvin)
+
 
 % Paramètres des moteurs
 nb_moteur = 2;
@@ -72,23 +78,37 @@ force_drag_roues = zeros(nbPoints,1);
 force_friction = zeros(nbPoints,1);
 force_opposition_tot = zeros(nbPoints,1);
 profil_force_tot = zeros(nbPoints,1);
-SoC = zeros(nbPoints,1);
+profil_force_traction = zeros(nbPoints,1);
+profil_radSpeed = zeros(nbPoints,1);
+profil_accel = zeros(nbPoints,1);
+profil_couple_moteurs = zeros(nbPoints,1);
+SoC = ones(nbPoints,1);
+tempWinding = 300*ones(nbPoints,1);  % Température ambiante (Kelvin)
+efficacite_moteurs = zeros(nbPoints,1);
+efficacite_drive = zeros(nbPoints,1);
+efficacite_battery = zeros(nbPoints,1);
 for k=2:nbPoints    
     % Calcul des focres appliquées sur le véhicule
-    force_g(k) = sin(atan(parcours.pente(k)/100))*masse_totale*const_grav; % fg = sin(pente)*m*g
+    force_g(k) = sin(atan(parcours.slope(k)/100))*masse_totale*const_grav; % fg = sin(pente)*m*g
     force_aero(k) = 0.5*mv_air*coef_trainee*aire_frontale*profil_vitesse(k-1).^2; % fa = 1/2*rho*Cx*S*V^2
     force_drag_roues(k) = nb_roue * 0.5 * mv_air * profil_vitesse(k-1).^2 * ((largeur_pneu*hauteur_roue^3)/(2 * rayon_roue^2));     % ****** À VÉRIFIER **********
-    force_friction(k) = 10; % ****** À VÉRIFIER **********                                                                          % ****** À VÉRIFIER **********  
+    force_friction(k) = 10; % ****** À VÉRIFIER **********       **********       **********        **********     **********       % ****** À VÉRIFIER **********  
     force_opposition_tot(k) = force_g(k)+force_aero(k)+force_drag_roues(k);
     profil_force_tot(k) = force_opposition_tot(k);
     
-    if(profil_vitesse(k-1) < vitesse_moy)     % Si la vitesse actuelle est inférieure à la vitesse de croisière alors accélération
+    if (profil_vitesse(k-1) < vitesse_min)   % Si la vitesse actuelle est plus basse que la vitesse de croisière minimale (Typiquement au départ)
+        accel(k) = accel_max;   % Pédale au plancher (Départ)
+    else
+        accel(k) = accel_nom;   % Accélération légère (En route)
+    end
+    
+    if (profil_vitesse(k-1) < vitesse_moy)     % Si la vitesse actuelle est inférieure à la vitesse de croisière alors accélération
         %temps_interval(k) = sqrt(2.*parcours.distance_interval(k-1)./accel_max);
         %profil_vitesse(k) = profil_vitesse(k-1)+accel_max.*temps_interval(k);
         %force_consigne_accel(k) = masse_totale * accel_max;
         
         if force_opposition_tot(k) > 0  % On accèlere seulement si la somme des forces d'opposition est positive sinon on lâche le gaz et on se laisse descendre la pente
-            profil_force_tot(k) = force_opposition_tot(k) + masse_totale*accel_max;
+            profil_force_tot(k) = force_opposition_tot(k) + masse_totale*accel(k);
         end
     else                                      % TODO : Ajouter une condition pour effectuer un freinage si la vitesse devient trop élevée (ie. descente de pente) 
         %profil_vitesse(k) = profil_vitesse(k-1);    % Si la vitesse actuelle est inférieure à la vitesse de croisière alors pas d'accélération
@@ -102,48 +122,81 @@ for k=2:nbPoints
     profil_accel(k) = (profil_force_traction(k)-force_opposition_tot(k))/masse_totale;
     
     if (profil_accel(k)> 0)
-        temps_interval(k) = parcours.distance_interval(k) / (profil_vitesse(k-1)+ profil_accel(k)/2 );
-        %temps_interval(k) = sqrt(2.*parcours.distance_interval(k)./abs(profil_accel(k)));
+        if (profil_vitesse(k-1) == 0)
+            temps_interval(k) = sqrt(2.*parcours.distance_interval(k)./abs(profil_accel(k)));
+        else
+            temps_interval(k) = parcours.distance_interval(k) / (profil_vitesse(k-1)+ profil_accel(k)/2 );
+            %temps_interval(k) = sqrt(2.*parcours.distance_interval(k)./abs(profil_accel(k)));
+        end
     else
         temps_interval(k) = parcours.distance_interval(k)/profil_vitesse(k-1);
     end
     profil_vitesse(k) = profil_vitesse(k-1)+profil_accel(k).*temps_interval(k);
     temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k);    
     
+    % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
+    if profil_force_traction(k) > 0 % Si les moteurs fournissent un couple de traction
+        profil_force_moteurs(k) = profil_force_traction(k);
+    else
+        profil_force_moteurs(k) = 0;
+    end
+    
+    profil_couple_moteurs(k) = profil_force_moteurs(k).*rayon_roue;
+    profil_radSpeed(k) = profil_vitesse(k)./rayon_roue;
+    [efficacite_moteurs(k), efficacite_drive(k), efficacite_battery(k), outTempWinding] = powerElecEfficiency(profil_couple_moteurs(k)/2, profil_radSpeed(k), tempAmbiant, tempWinding(k), SoC(k-1), cellModel);
+    tempWinding(k) = outTempWinding;
+    
+    puissance_moteur(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./temps_interval(k);
+    if (profil_force_moteurs(k) == 0)
+        puissance_fournie(k) = 0;
+    else
+        puissance_fournie(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./efficacite_moteurs(k)./efficacite_drive(k);
+    end
+    energie_mec_moteur(k) = sum(profil_force_moteurs(1:k).*parcours.distance_interval(1:k)')/3.6e6; % kWh
+    energie_fournie_traction(k) = sum(puissance_fournie(1:k))/3.6e6;   % kWh
+    
+    
+    capacite_restante = 3.35 * (1-SoC(k-1));    % Ah
+    Ebatt = 38 * polyval(cellModel.decharge0C2, capacite_restante); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
+    newSoc = energie_fournie_traction(k)*1000/Ebatt/11;
+    newEbatt = 38 * polyval(cellModel.decharge0C2, newSoc);
+    newSoc2 = energie_fournie_traction(k)*1000/newEbatt/11;
+    newEbatt2 = 38 * polyval(cellModel.decharge0C2, newSoc2);
+    
+    SoC(k) = (3.35 - newSoc2) / 3.35;
+    if SoC(k) < 0
+        SoC(k) = 0;
+        disp('OUT OF FUEL')
+        fprintf('Distance raced : %5.2d (km) \n', round(parcours.distance(k)));
+        fprintf('Percentage covered : %3.2f%%\n\n', parcours.distance(k)/parcours.distance(end)*100);
+        break;
+    end
 end
 
-figure,
-stem(temps_interval)
-
-figure, hold on, title('Force de traction'), plot(temps_cumulatif, profil_force_traction)
-figure, hold on, title('Profil de vitesse'), plot(temps_cumulatif, profil_vitesse*3.6);
-figure, hold on, title('Profil de vitesse'), plot(parcours.distance, profil_vitesse*3.6);
+figure, hold on, title('Force de traction'), plot(temps_cumulatif, profil_force_traction), xlabel('Temps (s)')
+figure, hold on, title('Profil de vitesse'), plot(temps_cumulatif, profil_vitesse*3.6), xlabel('Temps (s)')
+%figure, hold on, title('Profil de vitesse'), plot(parcours.distance, profil_vitesse*3.6), xlabel('Distance (km)')
 figure, hold on, title('Forces opposées au mouvement')
-plot(force_g, 'r')
-plot(force_aero)
-plot(force_drag_roues, 'g')
-plot(force_friction, 'm')
-plot(ones(size(force_drag_roues)).*masse_totale*accel_max, '--k')
-
-% Calcul la force de traction appliquée par les moteurs (ne considère pas
-% le freinage ni le regen)
-profil_force_moteurs = profil_force_traction';
-profil_force_moteurs(profil_force_moteurs<0) = 0;
-profil_couple_moteurs = profil_force_moteurs.*rayon_roue;
-radSpeed = profil_vitesse./rayon_roue;
-tempAmbiant = 300;  % Température ambiante (Kelvin)
-tempWinding = 300;  % Température bobinage (Kelvin)
-[efficacite_moteur, efficacite_drive, efficacite_battery, outTempWinding] = powerElecEfficiency(profil_couple_moteurs/2, radSpeed, tempAmbiant, tempWinding, SoC);
-puissance_moteur = profil_force_moteurs.*parcours.distance_interval./temps_interval;
-puissance_fournie = profil_force_moteurs.*parcours.distance_interval./efficacite_moteur./efficacite_drive;
-puissance_fournie(isnan(puissance_fournie)) = [];
-energie_mec_moteur = sum(profil_force_moteurs.*parcours.distance_interval)/3.6e6; % kWh
-energie_fournie_traction = sum(puissance_fournie)/3.6e6;   % kWh
+plot(force_g, 'r'), plot(force_aero), plot(force_drag_roues, 'g'), plot(force_friction, 'm'), plot(ones(size(force_drag_roues)).*masse_totale*accel_max, '--k')
 
 
-efficacite_moteur_disp = efficacite_moteur(efficacite_moteur>0);
-efficacite_drive_disp = efficacite_drive(efficacite_moteur>0);
-figure,
+% profil_force_moteurs = profil_force_traction';
+% profil_force_moteurs(profil_force_moteurs<0) = 0;
+% profil_couple_moteurs = profil_force_moteurs.*rayon_roue;
+% profil_radSpeed = profil_vitesse./rayon_roue;
+% tempAmbiant = 300;  % Température ambiante (Kelvin)
+% tempWinding = 300;  % Température bobinage (Kelvin)
+% [efficacite_moteurs, efficacite_drive, efficacite_battery, outTempWinding] = powerElecEfficiency(profil_couple_moteurs/2, profil_radSpeed, tempAmbiant, tempWinding, SoC);
+% puissance_moteur = profil_force_moteurs.*parcours.distance_interval./temps_interval;
+% puissance_fournie = profil_force_moteurs.*parcours.distance_interval./efficacite_moteurs./efficacite_drive;
+% puissance_fournie(isnan(puissance_fournie)) = [];
+% energie_mec_moteur = sum(profil_force_moteurs.*parcours.distance_interval)/3.6e6; % kWh
+% energie_fournie_traction = sum(puissance_fournie)/3.6e6;   % kWh
+
+
+efficacite_moteur_disp = efficacite_moteurs(efficacite_moteurs>0);
+efficacite_drive_disp = efficacite_drive(efficacite_moteurs>0);
+figure, hold on
 subplot(2,1,1), plot(efficacite_moteur_disp*100), hold on, title('Efficacité des moteurs')
 subplot(2,1,2), plot(efficacite_drive_disp*100, 'r'), hold on, title('Efficacité de la drive')
 
@@ -152,9 +205,10 @@ figure, hold on, title('Puissance des moteurs'), plot(temps_cumulatif, puissance
 heures_total = temps_cumulatif(end)/60/60
 distance_totale = parcours.distance(end)
 vitesse_moyenne = mean(profil_vitesse)*3.6 % Vitesse moyenne en km/h    %TODO : La vitesse moyenne n'est pas égale à la distance_totale/heures_total
-energie_fournie_traction
 
-SoC_final = energie_fournie_traction/Battery_full_capacity
+figure, hold on, title('État de charge de la batterie'), plot(SoC)
+
+SoC_final = energie_fournie_traction(end)/Battery_full_capacity(end)
 % parcours.profil_force_traction = profil_force_traction;
 % parcours.force_opposition_tot = force_opposition_tot;
 % parcours.profil_force_tot = profil_force_tot;
