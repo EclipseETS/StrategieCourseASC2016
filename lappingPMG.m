@@ -33,9 +33,9 @@ nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulat
 % end
 
 % Contraintes du parcours
-vitesse_min = 60/3.6;   % m/s (60 km/h)
+vitesse_min = 70/3.6;   % m/s (60 km/h)
 vitesse_moy = 80/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
-vitesse_max = 100/3.5;   % m/s (105 km/h)
+vitesse_max = 90/3.5;   % m/s (105 km/h)
 vitesse_ini = 0;        % m/s
 accel_nom = 0.03;       % m/s^2
 accel_max = 1;          % m/s^2
@@ -55,7 +55,7 @@ hauteur_roue = 0.3;    % m                                 ****** À VÉRIFIER ***
 
 % Constantes physiques
 const_grav = 9.81;      % m/s^2
-mv_air = 1.15;     % kg/m^3
+mv_air = 1.15;     % kg/m^3         % TODO : Transformer en équation en fonction de la pression atmosphérique et de la température
 tempAmbiant = 300;  % Température ambiante (Kelvin)
 
 
@@ -64,10 +64,10 @@ nb_moteur = 2;
 vitesse_nom = 111;  % rad/s
 couple_nom = 16.2;  % Nm
 couple_max = 42;    % Nm
-Kv = 0.45;          % V/rad/s (Constante EMF)
-Ka = 0.44;          % Nm/A (Constante de couple)
+% Kv = 0.45;          % V/rad/s (Constante EMF)
+% Ka = 0.44;          % Nm/A (Constante de couple)
 puissance_max = 1800; % W
-Battery_full_capacity = 4.861;
+%Battery_full_capacity = 4.861;
 
 
 % Initialisation des vecteurs pour la simulation
@@ -95,7 +95,7 @@ outOfFuel = 0;
 nbLaps = 0;
 while outOfFuel == 0
     nbLaps = nbLaps + 1;
-    %outOfFuel = 1;
+    outOfFuel = 1;
     for k=2:nbPoints
         % Calcul des focres appliquées sur le véhicule
         force_g(k) = sin(atan(parcours.slope(k)/100))*masse_totale*const_grav; % fg = sin(pente)*m*g
@@ -229,7 +229,7 @@ vitesse_moyenne = mean(profil_vitesse)*3.6 % Vitesse moyenne en km/h    %TODO : 
 
 figure, hold on, title('État de charge de la batterie'), plot(parcours.distance, SoC)
 
-Pourcentage_batt_consommee = energie_fournie_totale(end)/Battery_full_capacity(end)
+
 % parcours.profil_force_traction = profil_force_traction;
 % parcours.force_opposition_tot = force_opposition_tot;
 % parcours.profil_force_tot = profil_force_tot;
