@@ -1,8 +1,8 @@
-function [efficiencyMotors, efficiencyDrive, batteryEfficiency, outTempWinding] = powerElecEfficiency(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC, cellModel)
+function [motorsLosses, drivesLosses, batteryLosses, outTempWinding] = powerElecLosses(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC, cellModel)
 
 %% Éclipse 9
 %  powerElecEfficiency.m
-%  Permet de calculer l'efficacité de la chaîne de traction de la voiture solaire Éclipse 9
+%  Permet de calculer les pertes de chaque élément de la chaîne de traction de la voiture solaire Éclipse 9
 %  
 %  Les paramètres proviennent du document Application Notes pour un moteur
 %  Marand (CSiro)
@@ -92,8 +92,8 @@ beta = 1.8153E-2; % constant component of the switching loss (per unit of bus vo
 Cfeq = 1.5625E-4; % (F) equivalent capacitance*frequency product of the entire controller
 Req = 1.0800E-2; % (ohm) equivalent resistance of the entire controller
 
-driveLosses = Req.*phCurrentRMS.^2 +(alpha.*phCurrentRMS+beta).*Vbus + Cfeq.*Vbus.^2; % W
-driveInputPower = totalMotorsInputPower+driveLosses;    % W
-efficiencyDrive = totalMotorsInputPower./driveInputPower; % (%)
+drivesLosses = 2*(Req.*phCurrentRMS.^2 +(alpha.*3.*phCurrentRMS+beta).*Vbus + Cfeq.*Vbus.^2); % W    % **** TODO : Vérifier s'il faut bien multiplier le courant de phase par 3 -> 3.*phCurrentRMS
+drivesInputPower = totalMotorsInputPower+drivesLosses;    % W
+efficiencyDrive = totalMotorsInputPower./drivesInputPower; % (%)
 
 

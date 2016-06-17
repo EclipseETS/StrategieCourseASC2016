@@ -1,3 +1,5 @@
+function newData = interpolationGPSdata(data)
+
 %% Éclipse 9
 %  Interpolation des données GPS
 %
@@ -8,9 +10,9 @@
 %  Auteur : Julien Longchamp
 %  Date de création : 10-03-2016
 %%
-clc, close all, clear all
 
-data = load('etapesASC2016.mat');
+
+%data = load('etapesASC2016.mat');
 
 newData = data;
 distance_moyenne = 100; % (m) Distance moyenne souhaitée entre deux points 
@@ -60,7 +62,7 @@ etape2 = newData.etape2;
 etape3 = newData.etape3;
 etape4 = newData.etape4;
 
-save('etapesASC2016_continuous.mat', 'etape1', 'etape2', 'etape3', 'etape4');
+save('etapesASC2016_continuous2.mat', 'etape1', 'etape2', 'etape3', 'etape4');
 
 %% Figures pour validation
 figure, hold on, title('Interpolation des coordonnées GPS')

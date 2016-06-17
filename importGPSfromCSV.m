@@ -11,11 +11,16 @@ function data = importGPSfromCSV(filename, startRow, endRow)
 %   data = importGPSfromCSV('ASC2016_etape1.csv',2, 7845);
 %
 %    See also TEXTSCAN.
+
 %% Éclipse 9
+%  Auteur : Julien Longchamp
+%  Date de création : 26-02-2016
+%  Dernière modification : 15-06-2016
+
 %  Cette function doit être utilisée avec un fichier préalablement créé à
 %  partir du site http://www.gpsvisualizer.com/convert_input?convert_format
-%   
-%  Instruction pour créer un fichier CSV   
+
+%  Instructions pour créer un fichier CSV   
 %  1- Créer un fichier .kml à partir de Google Earth ou autre.
 %  2- Cocher les options suivantes sur le site de GPSVisualizer :
 %       Output format: Plain test
@@ -25,12 +30,14 @@ function data = importGPSfromCSV(filename, startRow, endRow)
 %  3- Cliquer sur Convert et copier le texte en sortie dans Excel
 %  4- Supprimer la deuxième ligne qui contient des informations inutiles
 %  (coller les données restantes ensemble, ne pas laisser de ligne vide)
-%  5- Sauvegarder le fichier .csv à l'aide d'Excel
-%  
-%  Auteur : Julien Longchamp
-%  Date de création : 26-02-2016
-%  Dernière modification : 
-%%
+%  5- Sauvegarder le fichier .csv à l'aide d'Excel (*** IMPORTANT de
+%  sauvegarder en format .csv)
+
+%  Instructions pour importer le fichier CVS dans Matlab
+%  1 - Utiliser la fonction "importGPSfromCSV.m" pour lire le fichier CSV
+%  2 - Utiliser la fonction "interpolationGPSdata.m" pour ajouter des points intermédiaires à tous les 100 mètres
+%  *** N'oubliez pas de renommez les fichiers de sortie des deux fonctions précédentes!
+%  3 - Vous pouvez à présent utiliser les fichiers main_simulateur.m et optim_etapes.m
 
 
 

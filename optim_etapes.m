@@ -15,9 +15,11 @@ clc, clear all, close all
 cellModel = load('Eclipse9_cells_discharge.mat'); % Importation des courbes de décharge des batteries
 
 %% IMPORTATION DES DONNÉES EN FORMAT .MAT DE L'ASC2016
-load('etapesASC2016_continuous.mat')
+%load('etapesASC2016_continuous.mat')
+load('TrackPMGInner.mat')
 % Choix du parcours (etape1, etape2, etape3 ou etape4)
-parcours = etape1;
+%parcours = [etape1 etape2];
+parcours = newParcours;
 
 distance_totale = parcours.distance(end);   % km
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
@@ -31,8 +33,8 @@ nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulat
 % end
 
 % Contraintes du parcours
-vitesse_min = 20/3.6;   % m/s (60 km/h)
-vitesse_moy = 48/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+vitesse_min = 60/3.6;   % m/s (60 km/h)
+vitesse_moy = 80/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
 vitesse_max = 100/3.5;   % m/s (105 km/h)
 vitesse_ini = 0;        % m/s
 accel_nom = 0.03;       % m/s^2
@@ -107,7 +109,7 @@ for k=2:nbPoints
         %profil_vitesse(k) = profil_vitesse(k-1)+accel_max.*temps_interval(k);
         %force_consigne_accel(k) = masse_totale * accel_max;
         
-        if force_opposition_tot(k) > 0  % On accèlere seulement si la somme des forces d'opposition est positive sinon on lâche le gaz et on se laisse descendre la pente
+        if force_opposition_tot(k) >= 0  % On accèlere seulement si la somme des forces d'opposition est positive sinon on lâche le gaz et on se laisse descendre la pente
             profil_force_tot(k) = force_opposition_tot(k) + masse_totale*accel(k);
         end
     else                                      % TODO : Ajouter une condition pour effectuer un freinage si la vitesse devient trop élevée (ie. descente de pente) 
@@ -173,12 +175,17 @@ for k=2:nbPoints
     end
 end
 
-figure, hold on, title('Force de traction'), plot(temps_cumulatif, profil_force_traction), xlabel('Temps (s)')
+figure, hold on, title('Force de traction totale excercée par les deux moteurs'), plot(temps_cumulatif, profil_force_traction), xlabel('Temps (s)')
 figure, hold on, title('Profil de vitesse'), plot(temps_cumulatif, profil_vitesse*3.6), xlabel('Temps (s)')
 %figure, hold on, title('Profil de vitesse'), plot(parcours.distance, profil_vitesse*3.6), xlabel('Distance (km)')
 figure, hold on, title('Forces opposées au mouvement')
-plot(force_g, 'r'), plot(force_aero), plot(force_drag_roues, 'g'), plot(force_friction, 'm'), plot(ones(size(force_drag_roues)).*masse_totale*accel_max, '--k')
-
+plot(force_g, 'r'),
+plot(force_aero, 'b'),
+plot(force_drag_roues, 'g'),
+plot(force_friction, 'm'),
+plot(ones(size(force_drag_roues)).*masse_totale*accel_max, '--k')
+plot(ones(size(force_drag_roues)).*nb_moteur.*couple_max./rayon_roue, '--r')
+legend('Force G', 'Drag aéro', 'Drag roue', 'Force friction', 'Force disponible', 'Force totale max')
 
 % profil_force_moteurs = profil_force_traction';
 % profil_force_moteurs(profil_force_moteurs<0) = 0;
@@ -197,8 +204,8 @@ plot(force_g, 'r'), plot(force_aero), plot(force_drag_roues, 'g'), plot(force_fr
 efficacite_moteur_disp = efficacite_moteurs(efficacite_moteurs>0);
 efficacite_drive_disp = efficacite_drive(efficacite_moteurs>0);
 figure, hold on
-subplot(2,1,1), plot(efficacite_moteur_disp*100), hold on, title('Efficacité des moteurs')
-subplot(2,1,2), plot(efficacite_drive_disp*100, 'r'), hold on, title('Efficacité de la drive')
+subplot(2,1,1), plot(efficacite_moteur_disp*100), hold on, title('Efficacité des moteurs'), grid on
+subplot(2,1,2), plot(efficacite_drive_disp*100, 'r'), hold on, title('Efficacité de la drive'), grid on
 
 figure, hold on, title('Puissance des moteurs'), plot(temps_cumulatif, puissance_moteur)
 
