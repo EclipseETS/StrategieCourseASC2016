@@ -1,4 +1,4 @@
-function newData = linearInterpolationGPSdata(data)
+function newData = linearInterpolationGPSdata(data, max_distance)
 
 %% Éclipse 9
 %  Interpolation des données GPS
@@ -6,10 +6,11 @@ function newData = linearInterpolationGPSdata(data)
 %  Cette fonction permet d'introduire des points par interpolations linéaire dans un
 %  fichier de coordonnées GPS créé à l'aide du fichier importGPSfromCSV.m
 %
-%  Les coordonnées en sortie de la fonction sont distancées au maximum de 100 mètres  
+%  Les coordonnées en sortie de la fonction sont distancées en fonction de max_distance
 %
 %  Auteur : Julien Longchamp
 %  Date de création : 15-06-2016
+%  Dernière modification : 28-06-2015 JL (Ajout de l'argument max_distance)
 %%
 
 
@@ -17,7 +18,7 @@ function newData = linearInterpolationGPSdata(data)
 display_figures = 0;
 
 newData = data;
-distance_moyenne = 100; % (m) Distance moyenne souhaitée entre deux points 
+distance_moyenne = max_distance; % (m) Distance moyenne souhaitée entre deux points 
 n = 1;
 
 

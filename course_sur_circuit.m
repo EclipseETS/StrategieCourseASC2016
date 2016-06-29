@@ -13,28 +13,29 @@ clc, clear all, close all
 
 %% Importation des données du circuit à réaliser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
-load('TrackPMGInner.mat')
+load('TrackPMGInner10m.mat')
 parcours = newParcours;
 
 %% Importation du modèle des cellules NCR18650BF
 cellModel = load('Eclipse9_cells_discharge.mat'); % Importation des courbes de décharge des batteries
 
 %% Contraintes du parcours
-contraintes.vitesse_min = 10/3.6;   % m/s (60 km/h)
-contraintes.vitesse_moy = 25/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
-contraintes.vitesse_max = 90/3.5;   % m/s (105 km/h)
+contraintes.vitesse_min = 40/3.6;   % m/s (60 km/h)
+contraintes.vitesse_moy = 55/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+contraintes.vitesse_max = 75/3.5;   % m/s (105 km/h)
 contraintes.vitesse_ini = 0;        % m/s
 contraintes.accel_nom = 0.03;       % m/s^2
 contraintes.accel_max = 1;          % m/s^2
 contraintes.decel_nom = -0.03;       % m/s^2
-contraintes.SoC_ini = 1.00;         % Initial State of Charge (%)
-contraintes.SoC_min = 0.25;       % Final State of Charge (%)
+contraintes.SoC_ini = .95;         % Initial State of Charge (%)
+contraintes.SoC_min = 0.30;       % Final State of Charge (%)
 
 %% Paramètres du véhicule Éclipse 9
 eclipse9.masse_totale = 225;     % kg % ÉCLIPSE 9 SANS COQUE
 eclipse9.aire_frontale = 1.25;   % m^2
 %eclipse9.coef_trainee = 0.135;   % coefficient de trainée aérodynamique           ****** À VÉRIFIER **********
-eclipse9.coef_trainee = 0.4;      % ÉCLIPSE 9 SANS COQUE
+eclipse9.coef_trainee = 0.25;      % ÉCLIPSE 9 SANS COQUE
+eclipse9.frottement = 139;       % N
 eclipse9.rayon_roue = 0.2775;    % m                                           ****** À VÉRIFIER **********
 eclipse9.surface_solaire = 6;    % m^2
 eclipse9.nb_roue = 4;            % Nombre de roues
@@ -48,8 +49,12 @@ eclipse9.puissance_max = 1800; % W     (Pour un moteur)
 
 %% Constantes physiques     % TODO : À remplacer par des vecteurs fournies par le module Eagle Tree
 constantes.const_grav = 9.81;      % m/s^2
-constantes.mv_air = 1.15;     % kg/m^3         % TODO : Transformer en équation en fonction de la pression atmosphérique et de la température
-constantes.tempAmbiant = 300;  % Température ambiante (Kelvin)
+constantes.tempAmbiant = 273.15+20;  % Température ambiante (Kelvin)
+constantes.absolutePressure = 102.4; % Pa
+constantes.specificAirConstant = 287.058; % J/(kg*K)
+constantes.mv_air = 1000*constantes.absolutePressure/(constantes.specificAirConstant*constantes.tempAmbiant);     % kg/m^3         % TODO : Transformer en équation en fonction de la pression atmosphérique et de la température
+constantes.vitesse_vent = 20/3.6; % m/s
+constantes.direction_vent = 220; % degrés
 
 %% Valeurs initiales au départ
 etat_course.SoC_start = 1.00;
@@ -68,8 +73,16 @@ while outOfFuel == 0
     end
 end
 
+figure, hold on, grid on
+title('Premier tour chez PMG')
+plot3(parcours.latitude, parcours.longitude, lapLog(1).puissance_elec_totale);
+xlabel('Longitude')
+ylabel('Latitude')
+zlabel('Vitesse (m/s)')
 
-
-
+A = parcours.latitude;
+B = parcours.longitude;
+C = lapLog(1).puissance_elec_totale;
+save('dataTour50kmh.mat', 'A', 'B', 'C')
 
 

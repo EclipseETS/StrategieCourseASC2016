@@ -52,8 +52,8 @@ for k=2:nbPoints
     force_g(k) = sin(atan(parcours.slope(k)/100))*eclipse9.masse_totale*constantes.const_grav; % fg = sin(pente)*m*g
     force_aero(k) = 0.5*constantes.mv_air*eclipse9.coef_trainee*eclipse9.aire_frontale*profil_vitesse(k-1).^2; % fa = 1/2*rho*Cx*S*V^2
     force_drag_roues(k) = eclipse9.nb_roue * 0.5 * constantes.mv_air * profil_vitesse(k-1).^2 * ((eclipse9.largeur_pneu*eclipse9.hauteur_roue^3)/(2 * eclipse9.rayon_roue^2));     % ****** À VÉRIFIER **********
-    force_friction(k) = 50; % ****** À VÉRIFIER **********       **********       **********        **********     **********       % ****** À VÉRIFIER **********
-    force_opposition_tot(k) = force_g(k)+force_aero(k)+force_drag_roues(k);
+    force_friction(k) = eclipse9.frottement; % ****** À VÉRIFIER **********       **********       **********        **********     **********       % ****** À VÉRIFIER **********
+    force_opposition_tot(k) = force_g(k)+force_aero(k)+force_friction(k); % +force_drag_roues(k) ********** Drag des roues inclus dans la trainée aéro totale
     profil_force_tot(k) = force_opposition_tot(k);
     
     if (profil_vitesse(k-1) < contraintes.vitesse_min)   % Si la vitesse actuelle est plus basse que la vitesse de croisière minimale (Typiquement au départ)

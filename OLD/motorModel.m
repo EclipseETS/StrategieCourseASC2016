@@ -1,4 +1,4 @@
-function [efficiency, outTempWinding] = motorEfficiency(actualTorque, radSpeed, tempAmbiant, tempWinding)
+%function [efficiency, outTempWinding] = motorEfficiency(actualTorque, radSpeed, tempAmbiant, tempWinding)
 
 %% Éclipse 9
 %  Modèle du moteur
@@ -29,8 +29,8 @@ function [efficiency, outTempWinding] = motorEfficiency(actualTorque, radSpeed, 
 % inductorVal = 95e-6; % H
 
 % Modèle Steady-State
-%tempAmbiant = 300; % K initial value (27°C)
-%tempWinding = 300; % K initial value (27°C)
+tempAmbiant = 300; % K initial value (27°C)
+tempWinding = 300; % K initial value (27°C)
 tempMagnet = 0.5*(tempAmbiant + tempWinding); % K
 magnetB = 1.32-(1.2e-3)*(tempMagnet-293);  % T
 phCurrentRMS = 0.561*magnetB*actualTorque; % Arms

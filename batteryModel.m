@@ -125,6 +125,15 @@ temps = 270;% s      Le tour de Rémi à 80km/h sur une piste de 6 km = 4.5 min
 battetyTempRise = batteryLosses*temps/(masse_batt*chaleur_massique)
 battetyFinalTemp = T_ambiant+battetyTempRise
 
-
+figure, hold on, title('ÉCLIPSE 9 : Courbes de décharge de la batterie')
+plot(discharge_0p2C(:,1), nb_cell_serie*discharge_0p2C(:,2), '*r')
+plot(continous_capacity,nb_cell_serie*continous_discharge_0p2C, 'r')
+plot(discharge_1C(:,1), nb_cell_serie*discharge_1C(:,2), 'sb')
+plot(continous_capacity,nb_cell_serie*continous_discharge_1C, 'b')
+plot(discharge_2C(:,1), nb_cell_serie*discharge_2C(:,2), '+g')
+plot(continous_capacity,nb_cell_serie*continous_discharge_2C, 'g')
+xlabel('Capacité (AH)')
+ylabel('Tension (V)')
+legend('7.37 A (0.2C)', '36.85 A (1C)', '73.70 A (2C)')
 
 

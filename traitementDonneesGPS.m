@@ -1,7 +1,7 @@
 %% %% Éclipse 9
 %  Auteur : Julien Longchamp
 %  Date de création : 15-06-2016
-%  Dernière modification : 
+%  Dernière modification : 28-06-2015 JL
 %
 % Ce script permet de traiter un fichier de données GPS en format .csv vers
 % le format .mat
@@ -46,11 +46,11 @@ clc, clear all, close all
 %fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape1.csv';
 %fichier_cible = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape1.csv'
 fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\TrackPMGInner.csv';
-fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner.mat'
+fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner10m.mat'
 %fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\Test.mat'
 % Charge un fichier source .csv dont le format est [Type Latitude Longitude Altitude(m) Distance(km) Interval(m)]
 parcours = importGPSfromCSV(fichier_source);
-newParcours = linearInterpolationGPSdata(parcours);
+newParcours = linearInterpolationGPSdata(parcours, 10);
 
 save(fichier_cible, 'newParcours')
 
