@@ -45,12 +45,12 @@ clc, clear all, close all
 % exemple :
 
 % ASC 2016
-fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape4.csv';
-fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage4_plus_speed.mat'
-speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage4.xlsx';
+% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape4.csv';
+% fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage4_plus_speed.mat'
+% speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage4.xlsx';
 
 % FSPG 2016
-% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
+fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\PittRaceNorthTrack10m.mat'
 
 % PMG
@@ -64,7 +64,7 @@ parcours = importGPSfromCSV(fichier_source);
 interval_max = 100; % mètres      Distance maximale entre deux points
 newParcours = linearInterpolationGPSdata(parcours, interval_max);
 
-save(fichier_cible, 'newParcours')
+
 
 figure, plot(parcours.latitude, parcours.longitude, '.')
 figure, plot3(parcours.latitude, parcours.longitude, parcours.altitude, '.')
@@ -72,12 +72,13 @@ figure, plot3(parcours.latitude, parcours.longitude, parcours.altitude, '.')
 figure, plot(newParcours.latitude, newParcours.longitude, '.r')
 figure, plot3(newParcours.latitude, newParcours.longitude, newParcours.altitude, 'r.')
 
-figure, hold on
+figure, hold on, title('Altitude')
 plot(parcours.distance, parcours.altitude, '.')
 plot(newParcours.distance, newParcours.altitude, 'r.')
-figure, plot(newParcours.distance, newParcours.slope)
-figure, plot(newParcours.slope)
+figure, plot(newParcours.distance, newParcours.slope), title('Pente')
 
+
+save(fichier_cible, 'newParcours')
 
 %% Ajout de l'information sur la vitesse maximale du parcours
 %  Un fichier excel contenant une colone correspondants à la distance totale (en miles) et un colone 

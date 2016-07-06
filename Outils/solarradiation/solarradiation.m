@@ -42,7 +42,6 @@ S0 = 1367;          % solar constant W m^-2   default 1367
 
 dr= 0.0174532925;   % degree to radians conversion factor
 
-zz = 1;
 
 %%  convert factors
 [slop,asp]=get_ders(dem,cs);   % calculate slope and aspect in radians using given cellsize cs

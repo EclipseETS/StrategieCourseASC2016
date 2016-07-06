@@ -20,11 +20,12 @@ parcours = newParcours;
 
 % Les deux tours d'Hadi
 %dir_path = ('C:\Users\club\Git\log-PMG\log-PMG\log 2016-06-19\DonneesMatlabTraitees');
+%dir_path = ('C:\Users\club\Git\log-PMG\log-PMG\log 2016-06-26\DonneesMatlabTraitees');
+dir_path = ('C:\Users\club\Git\log-PMG\log-PMG\log 2016-07-03\DonneesMatlabTraitees');
 
-dir_path = ('C:\Users\club\Git\log-PMG\log-PMG\log 2016-06-26\DonneesMatlabTraitees');
 addpath(dir_path);
 log_list = dir(dir_path);
-filename = log_list(7).name
+filename = log_list(4).name
 
 data = xlsread(filename);
 heure = data(:,1);
@@ -77,8 +78,8 @@ figure, hold on, title('Aperçu de l''essai')
 plot(t,VbusDC)
 plot(t, IbusDC, 'r')
 plot(t, vitesse, 'g-')
-plot(t, v_relatif, 'm-')
-legend('VbusDC', 'IbusDC', 'Vitesse (km/h)')
+plot(t, IbusDC.*VbusDC/10, '--')
+legend('VbusDC', 'IbusDC', 'Vitesse (km/h)', 'Puissance (hW)')
 
 figure, hold on
 plot(Odometre/1000, vitesse)
@@ -122,24 +123,24 @@ plot3(lat(1:cutPoint), lon(1:cutPoint), VbusDC(1:cutPoint).*IbusDC(1:cutPoint), 
 %plot3(lat(cutPoint:end), lon(cutPoint:end),  VbusDC(cutPoint:end).*IbusDC(cutPoint:end), 'sk')
 %plot3(lat, lon, VbusDC.*IbusDC, 'r')
 
-cutPoint = 500;
-load('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
-plot3(A,B,C, '-')
-legend('Données expérimentales', 'Résulats de simulation')
-
-X = VbusDC(1:cutPoint).*IbusDC(1:cutPoint);
-for m = 1:length(X)
-	M(m) = mean(X(max([1 m-10]):m));
-end
-
-figure, hold on, title('Model validation')
-plot3(lat(1:cutPoint), lon(1:cutPoint),Ah(1:cutPoint), '.')
-plot3(A,B,cumsum(D), ':')
-legend('Données expérimentales', 'Résulats de simulation')
-
-figure, hold on, title('PMG Bravo Track : 1 lap at 50kph')
-plot(t(1:cutPoint),1 - Ah(1:cutPoint)/11/3.35, '.')
-plot(E(1:663),1 - cumsum(D(1:663))/11/3.35, '.r')
-legend('Experimental data', 'Simulation data')
-xlabel('Time (s)')
-ylabel('SoC (%)')
+% cutPoint = 500;
+% load('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
+% plot3(A,B,C, '-')
+% legend('Données expérimentales', 'Résulats de simulation')
+% 
+% X = VbusDC(1:cutPoint).*IbusDC(1:cutPoint);
+% for m = 1:length(X)
+% 	M(m) = mean(X(max([1 m-10]):m));
+% end
+% 
+% figure, hold on, title('Model validation')
+% plot3(lat(1:cutPoint), lon(1:cutPoint),Ah(1:cutPoint), '.')
+% plot3(A,B,cumsum(D), ':')
+% legend('Données expérimentales', 'Résulats de simulation')
+% 
+% figure, hold on, title('PMG Bravo Track : 1 lap at 50kph')
+% plot(t(1:cutPoint),1 - Ah(1:cutPoint)/11/3.35, '.')
+% plot(E(1:663),1 - cumsum(D(1:663))/11/3.35, '.r')
+% legend('Experimental data', 'Simulation data')
+% xlabel('Time (s)')
+% ylabel('SoC (%)')

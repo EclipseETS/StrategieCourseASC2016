@@ -97,9 +97,10 @@ for k=2:nbPoints
     temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k); % s
     
     heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
-    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, constantes.densite_de_puissance_incidente);
+
+    densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(heure,1)*24);
+    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente);
     %energie_recuperee(k) = puissancePV(k) .* temps_interval(k); % J
-    
     
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
     if profil_force_traction(k) > 0 % Si les moteurs fournissent un couple de traction
@@ -113,20 +114,26 @@ for k=2:nbPoints
     tempWinding(k) = outTempWinding;
     
     puissance_moteurs(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./temps_interval(k); % W
+    puissance_elec_traction(k) = puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses; % W
     puissance_elec_totale(k) = (puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses - puissancePV(k)) ; % W
-    
     energie_mec_moteur(k) = sum(profil_force_moteurs(1:k).*parcours.distance_interval(1:k))/3.6e6; % kWh
     energie_depensee_totale(k) = puissance_elec_totale(k).* temps_interval(k) / 3600; % Wh
     
     
     SoC_Ah = 3.35 * (1-SoC(k-1));    % Ah      % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
     Ebatt = 38 * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
+      
     new_SoC_Ah = SoC_Ah + (energie_depensee_totale(k)/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
+    new_SoC_Ah = max([new_SoC_Ah, 0]);        
     newEbatt = 38 * polyval(cellModel.decharge0C2, new_SoC_Ah);
     new2_SoC_Ah = SoC_Ah + energie_depensee_totale(k)/newEbatt/11;
     newEbatt2 = 38 * polyval(cellModel.decharge0C2, new2_SoC_Ah);
     
     SoC(k) = (3.35 - new_SoC_Ah) / 3.35;
+    
+%     if SoC(k) > SoC(k-1)
+%         disp('RECHARGE')
+%     end
     
     if SoC(k) < contraintes.SoC_min
         SoC(k) = contraintes.SoC_min;
@@ -137,9 +144,9 @@ for k=2:nbPoints
         %break;
     end
 end
-fprintf('Lap : %3d \n', etat_course.nbLap);
-fprintf('SoC : %3.2d START\n', SoC(1));
-fprintf('SoC : %3.2d END\n', SoC(end));
+% fprintf('Lap : %3d \n', etat_course.nbLap);
+% fprintf('SoC : %3.2d START\n', SoC(1));
+% fprintf('SoC : %3.2d END\n', SoC(end));
 % SoC(1) = SoC(end);
 % SoC(2) = SoC(end);
 
@@ -155,5 +162,8 @@ lapLog.puissance_elec_totale = puissance_elec_totale; % W
 lapLog.energie_fournie_totale = energie_depensee_totale; % Wh
 lapLog.outOfFuel = outOfFuel;   % boolean
 lapLog.heure_finale = heure; % datenum
+lapLog.puissance_elec_totale = puissance_elec_totale; % W
+lapLog.puissancePV = puissancePV; % W
+lapLog.puissance_elec_traction = puissance_elec_traction; % W
 end
 

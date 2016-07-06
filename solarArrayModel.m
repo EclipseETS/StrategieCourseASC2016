@@ -7,16 +7,26 @@ function puissancePV = solarArrayModel(latitude, longitude, altitude, pente, heu
 %  disponible sur File Exchange à l'adresse suivante :
 %  https://www.mathworks.com/matlabcentral/fileexchange/23051-vectorized-solar-azimuth-and-elevation-estimation
 %
+%  Important d'ajouter le path vers la fonction SolarAzEl.m
+%    ex : addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\SolarAzEl');
+%
+%
+%
 %  Auteur : Julien Longchamp
 %  Date de création : 04-07-2016
 %  Dernière modification :
 %%
 
-addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\SolarAzEl');
+% Chemin vers le fichier SolarAzEl.m   % En commentaire puisque le fichier
+% est inclus par un autre fichier dans le simulateur d'Éclipse 9
+%addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\SolarAzEl');
 
 if nargin == 0
     clc, clear all, close all
-else    
+    addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\SolarAzEl');
+else   
+    
+    % Charge le model des paneaux solaires créé avec la fonction solarArrayModel (sans arguments)
     load('PV_efficiency_model.mat', 'PV_efficiency_model');
 end
 
