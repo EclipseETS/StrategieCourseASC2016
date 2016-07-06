@@ -1,6 +1,9 @@
-%function Vbatt = batteryModel(SoC, Ibatt)
+function Vbatt = batteryModel(SoC, Ibatt)
+
+if nargin == 0
 Ibatt = 0;
 SoC = 0.95;
+end
 
 %% Éclipse 9
 %  Modèle du batterie pack
@@ -69,15 +72,32 @@ p3 = polyfit(discharge_2C(:,1), discharge_2C(:,2), 7);
 
 capacite_restante = Ccell * (1-SoC);
 
-if (Ibatt <= 0.4*Ibatt_nom) % Choisir la courbe 0,2C si Ibatt <= 0,4C
-    Ecell_inst = polyval(p1, capacite_restante);
-    Ebatt = Ecell_inst * nb_cell_serie;
-elseif (Ibatt > 0.4*Ibatt_nom && Ibatt <= 1.5*Ibatt_nom) % Choisir la courbe 1C si 0,4 < Ibatt <= 1,5
-    Ecell_inst = polyval(p2, capacite_restante);
-    Ebatt = Ecell_inst * nb_cell_serie;
-elseif (Ibatt > 1.5*Ibatt_nom) % Choisir la courbe 2C si Ibatt < 1,5
-    Ecell_inst = polyval(p3, capacite_restante);
-    Ebatt = Ecell_inst * nb_cell_serie;
+% Si la fonction est appelée pour un point précis
+if length(SoC) == 1 
+    if (Ibatt <= 0.4*Ibatt_nom) % Choisir la courbe 0,2C si Ibatt <= 0,4C
+        Ecell_inst = polyval(p1, capacite_restante);
+        Ebatt = Ecell_inst * nb_cell_serie;
+    elseif (Ibatt > 0.4*Ibatt_nom && Ibatt <= 1.5*Ibatt_nom) % Choisir la courbe 1C si 0,4 < Ibatt <= 1,5
+        Ecell_inst = polyval(p2, capacite_restante);
+        Ebatt = Ecell_inst * nb_cell_serie;
+    elseif (Ibatt > 1.5*Ibatt_nom) % Choisir la courbe 2C si Ibatt < 1,5
+        Ecell_inst = polyval(p3, capacite_restante);
+        Ebatt = Ecell_inst * nb_cell_serie;
+    end
+elseif size(SoC) == size(Ibatt) % Si la fonction est appelée avec des vecteurs en arguments
+    Ebatt = zeros(size(SoC));
+    for k=1:length(SoC)
+        if (Ibatt(k) <= 0.4*Ibatt_nom) % Choisir la courbe 0,2C si Ibatt <= 0,4C
+            Ecell_inst = polyval(p1, capacite_restante(k));
+            Ebatt(k) = Ecell_inst * nb_cell_serie;
+        elseif (Ibatt(k) > 0.4*Ibatt_nom && Ibatt(k) <= 1.5*Ibatt_nom) % Choisir la courbe 1C si 0,4 < Ibatt <= 1,5
+            Ecell_inst = polyval(p2, capacite_restante(k));
+            Ebatt(k) = Ecell_inst * nb_cell_serie;
+        elseif (Ibatt(k) > 1.5*Ibatt_nom) % Choisir la courbe 2C si Ibatt < 1,5
+            Ecell_inst = polyval(p3, capacite_restante(k));
+            Ebatt(k) = Ecell_inst * nb_cell_serie;
+        end
+    end
 end
     
 Vbatt = Ebatt-Rint*Ibatt;
@@ -88,6 +108,8 @@ Vbatt = Ebatt-Rint*Ibatt;
 continous_discharge_0p2C = polyval(p1, continous_capacity);
 continous_discharge_1C = polyval(p2, continous_capacity);
 continous_discharge_2C = polyval(p3, continous_capacity);
+
+if nargin == 0
 figure, hold on
 plot(discharge_0p2C(:,1), discharge_0p2C(:,2), 'sr')
 plot(continous_capacity,continous_discharge_0p2C, 'r')
@@ -97,6 +119,7 @@ plot(discharge_2C(:,1), discharge_2C(:,2), 'sg')
 plot(continous_capacity,continous_discharge_2C, 'g')
 xlabel('Capacité (AH)')
 ylabel('Tension (V)')
+end
 
 decharge0C2 = p1;
 decharge1C = p2;
@@ -122,18 +145,20 @@ Courant_batt = 50; % A
 batteryLosses = Rint.*Courant_batt.^2;   % W
 temps = 270;% s      Le tour de Rémi à 80km/h sur une piste de 6 km = 4.5 min
 
+
+if nargin == 0
 battetyTempRise = batteryLosses*temps/(masse_batt*chaleur_massique)
 battetyFinalTemp = T_ambiant+battetyTempRise
 
-figure, hold on, title('ÉCLIPSE 9 : Courbes de décharge de la batterie')
+figure, hold on, title('ÉCLIPSE IX : Battery pack discharge')
 plot(discharge_0p2C(:,1), nb_cell_serie*discharge_0p2C(:,2), '*r')
 plot(continous_capacity,nb_cell_serie*continous_discharge_0p2C, 'r')
 plot(discharge_1C(:,1), nb_cell_serie*discharge_1C(:,2), 'sb')
 plot(continous_capacity,nb_cell_serie*continous_discharge_1C, 'b')
 plot(discharge_2C(:,1), nb_cell_serie*discharge_2C(:,2), '+g')
 plot(continous_capacity,nb_cell_serie*continous_discharge_2C, 'g')
-xlabel('Capacité (AH)')
-ylabel('Tension (V)')
+xlabel('Capacity (AH)')
+ylabel('Voltage (V)')
 legend('7.37 A (0.2C)', '36.85 A (1C)', '73.70 A (2C)')
-
+end
 

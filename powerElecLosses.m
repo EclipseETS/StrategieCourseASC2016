@@ -1,4 +1,4 @@
-function [motorsLosses, drivesLosses, batteryLosses, outTempWinding] = powerElecLosses(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC, cellModel)
+function [motorsLosses, drivesLosses, batteryLosses, outTempWinding, Ibatt] = powerElecLosses(actualTorque, radSpeed, tempAmbiant, tempWinding, SoC, cellModel)
 
 %% Éclipse 9
 %  powerElecEfficiency.m

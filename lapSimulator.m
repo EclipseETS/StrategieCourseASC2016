@@ -26,7 +26,7 @@ nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulat
 outOfFuel = 0;
 
 %% Initialisation des vecteurs pour la simulation
-profil_vitesse = zeros(nbPoints,1);
+profil_vitesse = etat_course.vitesse_ini*ones(nbPoints,1);
 temps_interval = zeros(nbPoints,1);
 temps_cumulatif = zeros(nbPoints,1);
 force_g = zeros(nbPoints,1);
@@ -43,9 +43,11 @@ profil_force_moteurs = zeros(nbPoints,1);
 puissance_moteurs = zeros(nbPoints,1);
 puissance_elec_totale = zeros(nbPoints,1);
 energie_mec_moteur = zeros(nbPoints,1);
-energie_fournie_totale = zeros(nbPoints,1);
+energie_depensee_totale = zeros(nbPoints,1);
 SoC = etat_course.SoC_start*ones(nbPoints,1);
 tempWinding = 300*ones(nbPoints,1);  % Température ambiante (Kelvin)
+Ibatt = zeros(nbPoints,1);
+puissancePV = zeros(nbPoints,1);
 
 for k=2:nbPoints
     % Calcul des focres appliquées sur le véhicule
@@ -92,7 +94,12 @@ for k=2:nbPoints
         temps_interval(k) = parcours.distance_interval(k)/profil_vitesse(k-1);
     end
     profil_vitesse(k) = profil_vitesse(k-1)+profil_accel(k).*temps_interval(k);
-    temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k);
+    temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k); % s
+    
+    heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
+    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, constantes.densite_de_puissance_incidente);
+    %energie_recuperee(k) = puissancePV(k) .* temps_interval(k); % J
+    
     
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
     if profil_force_traction(k) > 0 % Si les moteurs fournissent un couple de traction
@@ -101,21 +108,22 @@ for k=2:nbPoints
     
     profil_couple_moteurs(k) = profil_force_moteurs(k).*eclipse9.rayon_roue;
     profil_radSpeed(k) = profil_vitesse(k)./eclipse9.rayon_roue;
-    [motorsLosses, drivesLosses, batteryLosses, outTempWinding] = powerElecLosses(profil_couple_moteurs(k)/2, profil_radSpeed(k), constantes.tempAmbiant, tempWinding(k), SoC(k-1), cellModel);
+    
+    [motorsLosses, drivesLosses, batteryLosses, outTempWinding, Ibatt(k)] = powerElecLosses(profil_couple_moteurs(k)/2, profil_radSpeed(k), constantes.tempAmbiant, tempWinding(k), SoC(k-1), cellModel);
     tempWinding(k) = outTempWinding;
     
     puissance_moteurs(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./temps_interval(k); % W
-    puissance_elec_totale(k) = (puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses); % W
+    puissance_elec_totale(k) = (puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses - puissancePV(k)) ; % W
     
     energie_mec_moteur(k) = sum(profil_force_moteurs(1:k).*parcours.distance_interval(1:k))/3.6e6; % kWh
-    energie_fournie_totale(k) = puissance_elec_totale(k).* temps_interval(k) / 3600; % Wh
+    energie_depensee_totale(k) = puissance_elec_totale(k).* temps_interval(k) / 3600; % Wh
     
     
     SoC_Ah = 3.35 * (1-SoC(k-1));    % Ah      % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
     Ebatt = 38 * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
-    new_SoC_Ah = SoC_Ah + (energie_fournie_totale(k)/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
+    new_SoC_Ah = SoC_Ah + (energie_depensee_totale(k)/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
     newEbatt = 38 * polyval(cellModel.decharge0C2, new_SoC_Ah);
-    new2_SoC_Ah = SoC_Ah + energie_fournie_totale(k)/newEbatt/11;
+    new2_SoC_Ah = SoC_Ah + energie_depensee_totale(k)/newEbatt/11;
     newEbatt2 = 38 * polyval(cellModel.decharge0C2, new2_SoC_Ah);
     
     SoC(k) = (3.35 - new_SoC_Ah) / 3.35;
@@ -136,13 +144,16 @@ fprintf('SoC : %3.2d END\n', SoC(end));
 % SoC(2) = SoC(end);
 
 %% Valeurs de sortie de la fonction lapSimulator
-lapLog.temps_cumulatif = temps_cumulatif;
-lapLog.SoC = SoC;
+lapLog.temps_cumulatif = temps_cumulatif;   % (s)
+lapLog.SoC = SoC; % (%)
+lapLog.Ibatt = Ibatt;   % Adc
+lapLog.Vbatt = batteryModel(SoC, Ibatt); % Vdc
 lapLog.profil_force_traction = profil_force_traction; % N
 lapLog.profil_vitesse = profil_vitesse; % rad/s
 lapLog.puissance_moteurs = puissance_moteurs; % W
 lapLog.puissance_elec_totale = puissance_elec_totale; % W
-lapLog.energie_fournie_totale = energie_fournie_totale; % Wh
-lapLog.outOfFuel = outOfFuel;
+lapLog.energie_fournie_totale = energie_depensee_totale; % Wh
+lapLog.outOfFuel = outOfFuel;   % boolean
+lapLog.heure_finale = heure; % datenum
 end
 
