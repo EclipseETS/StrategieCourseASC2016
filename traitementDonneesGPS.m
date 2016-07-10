@@ -45,12 +45,12 @@ clc, clear all, close all
 % exemple :
 
 % ASC 2016
-% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape4.csv';
-% fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage4_plus_speed.mat'
-% speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage4.xlsx';
+% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape1.csv';
+% fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage1_plus_speed.mat'
+% speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage1.xlsx';
 
 % FSPG 2016
-fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
+% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\PittRaceNorthTrack10m.mat'
 
 % PMG
@@ -78,7 +78,7 @@ plot(newParcours.distance, newParcours.altitude, 'r.')
 figure, plot(newParcours.distance, newParcours.slope), title('Pente')
 
 
-save(fichier_cible, 'newParcours')
+
 
 %% Ajout de l'information sur la vitesse maximale du parcours
 %  Un fichier excel contenant une colone correspondants à la distance totale (en miles) et un colone 
@@ -93,18 +93,21 @@ if exist('speed_limit_filename', 'var')
     
     speed_limit = speed_limit .* 1.609; % Conversion des miles en km et des mph en km/h (1 mile = 1609 mètres)
     
-    parcours.speed_limit = zeros(size(parcours.distance));
+    newParcours.speed_limit = zeros(size(newParcours.distance));
     
     indexSL = 1;
     
-    for k=1:length(parcours.speed_limit)
-        parcours.speed_limit(k) = speed_limit(indexSL,2);
-        if parcours.distance(k) > speed_limit(indexSL,1)
+    for k=1:length(newParcours.speed_limit)
+        newParcours.speed_limit(k) = speed_limit(indexSL,2);
+        if newParcours.distance(k) > speed_limit(indexSL,1)
             indexSL = indexSL + 1;
         end
     end
     
     figure, hold on, grid on
     plot(speed_limit(:,1), speed_limit(:,2), 'o')
-    plot(parcours.distance, parcours.speed_limit, 'r')
+    plot(newParcours.distance, newParcours.speed_limit, 'r')
 end
+
+
+save(fichier_cible, 'newParcours')
