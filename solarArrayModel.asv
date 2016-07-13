@@ -81,7 +81,7 @@ if surSupport == 0
     % Calcul de l'élévation et de l'azimuth du soleil
     [Az El] = SolarAzEl(heure,latitude,longitude,altitude);
 elseif surSupport == 1
-    El = 0; % Panneaux perpendiculaires au soleil
+    El = 0; % Panneaux perpendicula
 end
 % Calcul de la puissance fournie par les panneaux solaires
 puissancePV = SurfaceTotalePV * polyval(PV_efficiency_model, abs(El)) * densite_de_puissance_incidente;

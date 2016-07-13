@@ -25,6 +25,9 @@ function routeLog = routeSimulator(parcours, etat_course, cellModel, contraintes
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
 outOfFuel = 0;
 
+surSupport = 1;  % Panneaux solaires sur le support inclinable
+sansSupport = 0; % Panneaux solaire sur la voiture
+
 %% Initialisation des vecteurs pour la simulation
 profil_vitesse = etat_course.vitesse_ini*ones(nbPoints,1);
 temps_interval = zeros(nbPoints,1);
@@ -48,6 +51,7 @@ SoC = etat_course.SoC_start*ones(nbPoints,1);
 tempWinding = 300*ones(nbPoints,1);  % Température ambiante (Kelvin)
 Ibatt = zeros(nbPoints,1);
 puissancePV = zeros(nbPoints,1);
+
 
 for k=2:nbPoints
     % Calcul des focres appliquées sur le véhicule
@@ -97,8 +101,9 @@ for k=2:nbPoints
         delta_t_soir = (temps_recharge_soir(2) - temps_recharge_soir(1)) * (24*60*60); % secondes Résolution temporelle pour la recharge de fin de journée (fraction de jour /(24*60*60) = secondes)
         energie_recuperee_soir = 0; % J
         for r = 1:length(temps_recharge_soir)
-            densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(temps_recharge_soir(r),1)*24); % Calcul de la densite de puissance incidente
-            puissancePV_soir(r) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), temps_recharge_soir(r), densite_de_puissance_incidente); % W
+%             densite_de_puissance_incidente2 = polyval(constantes.irrandiance_coef, mod(temps_recharge_soir(r),1)*24); % Calcul de la densite de puissance incidente
+            [densite_de_puissance_incidente, sunrise, sunset] = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,temps_recharge_soir(r)); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
+            puissancePV_soir(r) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), temps_recharge_soir(r), densite_de_puissance_incidente, surSupport); % W
             energie_soir(r) = puissancePV_soir(r) * delta_t_soir; % Joules
             energie_recuperee_soir = energie_recuperee_soir + puissancePV_soir(r) * delta_t_soir; % Joules
         end               
@@ -108,8 +113,9 @@ for k=2:nbPoints
         delta_t_matin = (temps_recharge_matin(2) - temps_recharge_matin(1)) * (24*60*60); % secondes Résolution temporelle pour la recharge de fin de journée (fraction de jour /(24*60*60) = secondes)
         energie_recuperee_matin = 0; % J
         for r = 1:length(temps_recharge_matin)
-            densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(temps_recharge_matin(r),1)*24); % Calcul de la densite de puissance incidente
-            puissancePV_matin(r) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), temps_recharge_matin(r), densite_de_puissance_incidente); % W
+%             densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(temps_recharge_matin(r),1)*24); % Calcul de la densite de puissance incidente
+            [densite_de_puissance_incidente, sunrise, sunset] = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,temps_recharge_soir(r)); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
+            puissancePV_matin(r) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), temps_recharge_matin(r), densite_de_puissance_incidente, surSupport); % W
             energie_matin(r) = puissancePV_matin(r) * delta_t_matin; % Joules
             energie_recuperee_matin = energie_recuperee_matin + puissancePV_matin(r) * delta_t_matin; % Joules
         end
@@ -124,15 +130,15 @@ for k=2:nbPoints
         
         SoC_Ah = 3.35 * (1-SoC(k-1));    % Ah      % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
         Ebatt = 38 * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C        
-        new_SoC_Ah = SoC_Ah - (energie_recuperee_wh(k)/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
+        new_SoC_Ah = SoC_Ah - (energie_recuperee_wh/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
         new_SoC_Ah = max([new_SoC_Ah, 0]);
-                
-        SoC(k) = (3.35 - new_SoC_Ah) / 3.35;
-    
+        
+        SoC(k-1) = (3.35 - new_SoC_Ah) / 3.35;
     end
     
-    densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(heure,1)*24);
-    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente);
+    %     densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(heure,1)*24);
+    [densite_de_puissance_incidente, sunrise, sunset] = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
+    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente, sansSupport);
     %energie_recuperee(k) = puissancePV(k) .* temps_interval(k); % J
     
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen

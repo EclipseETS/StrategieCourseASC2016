@@ -64,6 +64,8 @@ plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.SoC*1000, '--m')
 figure(h2)
 plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.SoC*100, '--m')
 plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.profil_vitesse*3.6, 'g')
+plot(parcours.distance + (k-1)*parcours.distance(end), parcours.speed_limit, 'r')
+
 % plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.profil_accel*36, 'r')
 
 end
@@ -74,7 +76,7 @@ ylabel('puissance (W)')
 legend('ELE', 'PV', 'MEC', 'SoC');
 figure(h2)
 xlabel('distance (km)')
-legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
+legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 
 
 

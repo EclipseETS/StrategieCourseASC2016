@@ -32,8 +32,8 @@ load('SolarIrradianceLat41N.mat', 'irrandiance_coef');
 
 
 %% Contraintes du parcours
-contraintes.vitesse_min = 60/3.6;   % m/s (60 km/h)
-contraintes.vitesse_moy = 70/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+contraintes.vitesse_min = 50/3.6;   % m/s (60 km/h)
+contraintes.vitesse_moy = 62/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
 contraintes.vitesse_max = 120/3.5;   % m/s (105 km/h)
 contraintes.vitesse_ini = 0;        % m/s
 contraintes.accel_nom = 0.1;        % m/s^2
