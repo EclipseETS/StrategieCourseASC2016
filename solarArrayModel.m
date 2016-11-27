@@ -1,4 +1,4 @@
-function puissancePV = solarArrayModel(latitude, longitude, altitude, pente, heure, densite_de_puissance_incidente, surSupport)
+function [puissancePV, Elevation] = solarArrayModel(heure, densite_de_puissance_incidente, surSupport, sun_cycle_coef)
 
 %% Éclipse 9
 %  Modèle du système photovoltaïque d'Éclipse 9
@@ -50,12 +50,13 @@ if nargin == 0
     % inputs : latitude, longitude, heure, jour
     %     latitude =  41.279017;
     %     longitude = -81.541610;
-    latitude = 45.495122;
-    longitude = -73.553607;
-    altitude = 10; % mètres
-    pente = 0;
-    heure = datenum([2016,07,04,10,0,0]);
+    latitude = 45.6966; % PittRace
+    longitude = -73.8736; % PittRace
+    altitude = 0/1000; % km
+    pente = 0; % Degrés
+    heure = datenum([2016,07,21,20,0,0]);
     densite_de_puissance_incidente = 800;
+    surSupport = 0;
     
     PV_loss_datapoint  = ([3.1  2.5  2.0 2.5  3.0  4.1  6] - 2) / 100; % (%)  Le -2 provient d'un échange de courriel entre Gocherman et LP au sujet de l'encapsulation zero losses
     PV_angle_datapoint = [0    20   40  50   60    80  90];
@@ -74,18 +75,21 @@ if nargin == 0
     PV_eff_curve = polyval(PV_efficiency_model, 0:90);
     figure, hold on, grid on
     plot(PV_angle_datapoint, efficaciteCellPV, 'o')
-    plot(0:90, PV_eff_curve, 'r')
+    plot(0:90, PV_eff_curve, 'r')  
+    
 end
 
 if surSupport == 0
     % Calcul de l'élévation et de l'azimuth du soleil
-    [Az El] = SolarAzEl(heure,latitude,longitude,altitude);
+%     [Az El] = SolarAzEl(heure,latitude,longitude,altitude/1000);
+%     [ Elevation Azimuth] = SunElevationInstant(heure,latitude,longitude,altitude);
+    Elevation = polyval(sun_cycle_coef, mod(heure, 1)); % On calcule l'élévation du soleil à l'aide d'une parabole (Voir sunCycleFSGP2016.m) L'heure doit être comprise entre 0 et 1, on élimine l'année et le jour avec le modulo 1
 elseif surSupport == 1
-    El = 0; % Panneaux perpendiculaires au soleil
+    Elevation = 90; % Panneaux perpendiculaires au soleil
 end
 % Calcul de la puissance fournie par les panneaux solaires
-puissancePV = SurfaceTotalePV * polyval(PV_efficiency_model, abs(El)) * densite_de_puissance_incidente;
-  
+puissancePV = SurfaceTotalePV * polyval(PV_efficiency_model, abs(90-Elevation)) * densite_de_puissance_incidente * sind(Elevation);
+
 % ********** TODO : AJOUTER LES MPPT **********
   
   

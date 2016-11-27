@@ -1,0 +1,33 @@
+# StrategyColorSchemeForMATLAB - MATLAB color scheme
+# Generated with schemer_export v1.4.0, on MATLAB 8.6.0.267246 (R2015b)
+# Thu Jul 21 12:14:10 EDT 2016
+# To enable this color scheme in MATLAB use schemer_import, available at:
+#     https://github.com/scottclowe/matlab-schemer
+#     https://www.mathworks.com/matlabcentral/fileexchange/53862-matlab-schemer
+ColorsUseSystem=Bfalse
+ColorsUseMLintAutoFixBackground=Btrue
+Editor.VariableHighlighting.Automatic=Btrue
+Editor.NonlocalVariableHighlighting=Btrue
+EditorCodepadHighVisible=Btrue
+EditorCodeBlockDividers=Btrue
+Editorhighlight-caret-row-boolean=Bfalse
+EditorRightTextLineVisible=Bfalse
+EditorRightTextLimitLineWidth=I1
+ColorsText=C-2893873
+ColorsBackground=C-13749194
+Colors_M_Keywords=C-8687752
+Colors_M_Comments=C-8934352
+Colors_M_Strings=C-2196224
+Colors_M_UnterminatedStrings=C-2196224
+Colors_M_SystemCommands=C-16744704
+Colors_M_Errors=C-65281
+Colors_HTML_HTMLLinks=C-9265201
+Colors_M_Warnings=C-217282
+ColorsMLintAutoFixBackground=C-6029312
+Editor.VariableHighlighting.Color=C-11625978
+Editor.NonlocalVariableHighlighting.TextColor=C-9265201
+Editorhighlight-lines=C-13288387
+Editorhighlight-caret-row-boolean-color=C-11184301
+EditorRightTextLimitLineColor=C-11775661
+Color_CmdWinWarnings=C-217282
+Color_CmdWinErrors=C-2444289

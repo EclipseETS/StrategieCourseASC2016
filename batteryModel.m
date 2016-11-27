@@ -160,5 +160,16 @@ plot(continous_capacity,nb_cell_serie*continous_discharge_2C, 'g')
 xlabel('Capacity (AH)')
 ylabel('Voltage (V)')
 legend('7.37 A (0.2C)', '36.85 A (1C)', '73.70 A (2C)')
+
+figure, hold on, title('ÉCLIPSE IX : Battery pack discharge')
+plot(1-(discharge_0p2C(:,1)/3.35), nb_cell_serie*discharge_0p2C(:,2), '*r')
+plot(1-(continous_capacity/3.35),nb_cell_serie*continous_discharge_0p2C, 'r')
+plot(1-(discharge_1C(:,1)/3.35), nb_cell_serie*discharge_1C(:,2), 'sb')
+plot(1-(continous_capacity/3.35),nb_cell_serie*continous_discharge_1C, 'b')
+plot(1-(discharge_2C(:,1)/3.35), nb_cell_serie*discharge_2C(:,2), '+g')
+plot(1-(continous_capacity/3.35),nb_cell_serie*continous_discharge_2C, 'g')
+xlabel('SoC (%)')
+ylabel('Voltage (V)')
+legend('7.37 A (0.2C)', '36.85 A (1C)', '73.70 A (2C)')
 end
 

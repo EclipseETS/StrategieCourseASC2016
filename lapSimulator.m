@@ -1,4 +1,4 @@
-function lapLog = lapSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes)
+function lapLog = lapSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes, reglement, meteo)
 
 %% Éclipse 9
 %  La fonction lapSimulator permet de simuler un tour de piste sur circuit.
@@ -24,6 +24,10 @@ function lapLog = lapSimulator(parcours, etat_course, cellModel, contraintes, ec
 %distance_totale = parcours.distance(end);   % km
 nbPoints = length(parcours.distance);       % nombre d'intervals pour la simulation
 outOfFuel = 0;
+sansSupport = 0; % Les panneaux solaires sont considérées à plat sur le sol
+
+index_meteo = 1;
+heure = etat_course.heure_depart; % Date et heure au début de la course
 
 %% Initialisation des vecteurs pour la simulation
 profil_vitesse = etat_course.vitesse_ini*ones(nbPoints,1);
@@ -48,12 +52,23 @@ SoC = etat_course.SoC_start*ones(nbPoints,1);
 tempWinding = 300*ones(nbPoints,1);  % Température ambiante (Kelvin)
 Ibatt = zeros(nbPoints,1);
 puissancePV = zeros(nbPoints,1);
+direction = zeros(nbPoints, 1);
 
+% h = waitbar(0, 'Lap en cours');
 for k=2:nbPoints
+%     waitbar(k / nbPoints)
+    if mod(heure,1) > (reglement.heure_arret-reglement.heure_depart)*(index_meteo/length(meteo.vitesse_vent)) && index_meteo < length(meteo.vitesse_vent)
+        index_meteo = index_meteo+1;
+    end
+    direction(k) = azimuth(parcours.latitude(k), parcours.longitude(k), parcours.latitude(k-1), parcours.longitude(k-1));
+    vitesse_ecoulement_air = profil_vitesse(k-1) + meteo.vitesse_vent(index_meteo) * cosd(meteo.direction_vent(index_meteo) - direction(k));
+    
     % Calcul des focres appliquées sur le véhicule
-    force_g(k) = sin(atan(parcours.slope(k)/100))*eclipse9.masse_totale*constantes.const_grav; % fg = sin(pente)*m*g
-    force_aero(k) = 0.5*constantes.mv_air*eclipse9.coef_trainee*eclipse9.aire_frontale*profil_vitesse(k-1).^2; % fa = 1/2*rho*Cx*S*V^2
-    force_drag_roues(k) = eclipse9.nb_roue * 0.5 * constantes.mv_air * profil_vitesse(k-1).^2 * ((eclipse9.largeur_pneu*eclipse9.hauteur_roue^3)/(2 * eclipse9.rayon_roue^2));     % ****** À VÉRIFIER **********
+    force_g(k) = sin(atan(parcours.slope(k)/100))*eclipse9.masse_totale*constantes.const_grav; % fg = sin(pente)*m*g    
+    force_aero(k) = 0.5*meteo.mv_air(index_meteo)*eclipse9.coef_trainee*eclipse9.aire_frontale*vitesse_ecoulement_air.^2; % fa = 1/2*rho*Cx*S*V^2
+%     force_aero(k) = 0.5*meteo.mv_air*eclipse9.coef_trainee*eclipse9.aire_frontale*profil_vitesse(k-1).^2; 
+%     force_aero(k) = 0.5*constantes.mv_air*eclipse9.coef_trainee*eclipse9.aire_frontale*profil_vitesse(k-1).^2; % fa = 1/2*rho*Cx*S*V^2
+%     force_drag_roues(k) = eclipse9.nb_roue * 0.5 * constantes.mv_air * profil_vitesse(k-1).^2 * ((eclipse9.largeur_pneu*eclipse9.hauteur_roue^3)/(2 * eclipse9.rayon_roue^2));     % ****** À VÉRIFIER **********
     force_friction(k) = eclipse9.frottement; % ****** À VÉRIFIER **********       **********       **********        **********     **********       % ****** À VÉRIFIER **********
     force_opposition_tot(k) = force_g(k)+force_aero(k)+force_friction(k); % +force_drag_roues(k) ********** Drag des roues inclus dans la trainée aéro totale
     
@@ -90,8 +105,10 @@ for k=2:nbPoints
     
     heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
 
-    densite_de_puissance_incidente = polyval(constantes.irrandiance_coef, mod(heure,1)*24);
-    puissancePV(k) = solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente);
+    densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
+    [puissancePV_sansNuages Elevation(k)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
+    puissancePV(k) = meteo.couverture_ciel(index_meteo) .* puissancePV_sansNuages;
+%     puissancePV(k) = meteo.couverture_ciel(index_meteo) .* solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
     %energie_recuperee(k) = puissancePV(k) .* temps_interval(k); % J
     
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
@@ -102,7 +119,7 @@ for k=2:nbPoints
     profil_couple_moteurs(k) = profil_force_moteurs(k).*eclipse9.rayon_roue;
     profil_radSpeed(k) = profil_vitesse(k)./eclipse9.rayon_roue;
     
-    [motorsLosses, drivesLosses, batteryLosses, outTempWinding, Ibatt(k)] = powerElecLosses(profil_couple_moteurs(k)/2, profil_radSpeed(k), constantes.tempAmbiant, tempWinding(k), SoC(k-1), cellModel);
+    [motorsLosses, drivesLosses, batteryLosses, outTempWinding, Ibatt(k)] = powerElecLosses(profil_couple_moteurs(k)/2, profil_radSpeed(k), meteo.temperature(index_meteo), tempWinding(k), SoC(k-1), cellModel);
     tempWinding(k) = outTempWinding;
     
     puissance_moteurs(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./temps_interval(k); % W
@@ -141,6 +158,10 @@ end
 % SoC(1) = SoC(end);
 % SoC(2) = SoC(end);
 
+
+% close(h) % Close the waitbar
+
+
 %% Valeurs de sortie de la fonction lapSimulator
 lapLog.temps_cumulatif = temps_cumulatif;   % (s)
 lapLog.SoC = SoC; % (%)
@@ -157,5 +178,6 @@ lapLog.heure_finale = heure; % datenum
 lapLog.puissance_elec_totale = puissance_elec_totale; % W
 lapLog.puissancePV = puissancePV; % W
 lapLog.puissance_elec_traction = puissance_elec_traction; % W
+lapLog.elevation = Elevation; % degrés
 end
 

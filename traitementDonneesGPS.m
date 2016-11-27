@@ -45,12 +45,12 @@ clc, clear all, close all
 % exemple :
 
 % ASC 2016
-% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape1.csv';
+fichier_source = 'R:\Eclipse\ELE\Eclipse%209\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_etape1.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage1_plus_speed.mat'
 % speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage1.xlsx';
 
 % FSPG 2016
-% fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
+% fichier_source = 'R:\Eclipse\ELE\Eclipse%209\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\PittRaceNorthTrack10m.mat'
 
 % PMG
@@ -110,4 +110,4 @@ if exist('speed_limit_filename', 'var')
 end
 
 
-save(fichier_cible, 'newParcours')
+% save(fichier_cible, 'newParcours')

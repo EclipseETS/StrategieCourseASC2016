@@ -13,7 +13,7 @@ clc, clear all, close all
 
 %% Importation des données du circuit à réaliser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
-load('ASC2016_stage1_plus_speed.mat')
+load('ASC2016_stage3_plus_speed.mat')
 parcours = newParcours;
 
 %% Vérification de la présence des limites de vitesse dans le fichier du parcours
@@ -24,16 +24,13 @@ catch E
     contraintes.noSpeedLimit = 1;
 end
 
-%% Charge tous les paramètres de la simulation
-run('parameterGeneratorEclipseIX.m');
+%% Charge tous les paramètres de la simulation5
+run('parameterGeneratorEclipseIX.m')
 
-%% Règlements de la ASC 2016 rev. B
-reglement.impound_out = 7/24; % Batterie disponible à partir de 7h00
-reglement.impound_in = 20/24; % Batterie non-disponible à partir de 20h00
-reglement.heure_depart = 9/24; % Départ à 9h00
-reglement.heure_arret = 18/24; % Arrêt à 18h00
+etat_course.index_depart = 13170; %round(0.47 * length(parcours.distance)); % Départ à un pourcentage du parcours
+routeLog = routeSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes, reglement, meteo);
 
-routeLog = routeSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes, reglement);
+routeLog.puissance_elec_traction(isnan(routeLog.puissance_elec_traction)) = 0;
 
 for k = 1:length(routeLog)
     vitesse_moyenne(k) = mean(routeLog(k).profil_vitesse);
@@ -45,7 +42,7 @@ puissance_moyenne_totale = mean(puissance_moyenne);
 
 fprintf('\nHeure de départ %s \n', datestr(etat_course.heure_depart));
 fprintf('Heure finale %s \n', datestr(routeLog.heure_finale));
-fprintf('Distance parcourue %3.2f km \n', parcours.distance(end));
+fprintf('Distance parcourue %3.2f km \n', parcours.distance(end)-parcours.distance(etat_course.index_depart));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 
@@ -88,3 +85,11 @@ legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
 
 
+figure, hold on, grid on
+plot(parcours.distance, parcours.altitude);
+
+figure, hold on, grid on
+plot3(parcours.longitude, parcours.latitude, parcours. altitude)
+
+figure, hold on, grid on
+plot(parcours.distance)
