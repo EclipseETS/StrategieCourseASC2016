@@ -6,23 +6,30 @@
 %
 %  Auteur : Julien Longchamp
 %  Date de création : 17-06-2016
-%  Dernière modification : 07-07-2016 (JL)
+%  Dernières modifications : 13-01-2017 (JL) Rédaction du guide de l'utilisateur
+%                            07-07-2016 (JL)
 %%
 
 clc, clear all, close all
 
+%% Ajoute les répertoires nécessaires au chemin de recherche du projet
+addpath('Data');
+addpath('Models');
+addpath('Outils');
+
 %% Importation des données du circuit à réaliser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
-% load('TrackPMGInner10m.mat')
-load('PittRaceNorthTrack10m.mat')
+load('TrackPMGInner10m.mat')
+%load('PittRaceNorthTrack10m.mat')
 parcours = newParcours;
 
 %% Charge tous les paramètres de la simulation
 run('parameterGeneratorEclipseIX.m');
 
+
 %% Simulation des tours de piste
 nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
-outOfFuel = 0;
+outOfFuel = 0; % Flag qui tombe à 1 lorsque la batterie est à plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.nbLap = etat_course.nbLap+1;
@@ -69,9 +76,9 @@ fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
 
 h1 = figure;
-hold on, grid on, title('FSGP 2016')
+hold on, grid on, title('Évolution de la puissance')
 h2 = figure;
-hold on, grid on, title('FSGP 2016')
+hold on, grid on, title('Évolution de l''''état de charge')
 for k = 1:length(lapLog)
     figure(h1)
     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
