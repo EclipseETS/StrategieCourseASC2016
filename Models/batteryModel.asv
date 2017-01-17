@@ -13,17 +13,14 @@ end
 %  Ce fichier contient la structure cellModel qui contient les coefficients
 %  des différents polynômes représentant chacun une des courbes de
 %  décharges de la cellule.
-%  
-%  Il est aussi possible d'utiliser le modèle sous forme de fonction pour
-%  connaître la tension aux bornes de la batterie pour un état de charge et
-%  un courant de sortie donné.
+%
 %  
 %  Les paramètres proviennent de la datasheet suivante :
 %   https://www.akkuteile.de/tpl/download/NCR-18650BF.pdf
 %
 %  Auteur : Julien Longchamp
 %  Date de création : 26-02-2016
-%  Dernière modification : 17-01-2017 (JL) Modification du chemin pour la sauvegarde du fichier .mat
+%  Dernière modification :
 %%
 
 nb_cell_serie = 38;
@@ -131,14 +128,10 @@ xlabel('Capacité (AH)')
 ylabel('Tension (V)')
 end
 
-
-% Sauvegarde les coefficients des polynômes si aucun argument n'est spécifié
-if nargin == 0
-    decharge0C2 = p1;
-    decharge1C = p2;
-    decharge2C = p3;
-    save('..\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
-end
+decharge0C2 = p1;
+decharge1C = p2;
+decharge2C = p3;
+%save('Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
 
 %% Section spéciale pour le calcul de l'élévation de la température dans le battery pack d'Éclipse 9
 

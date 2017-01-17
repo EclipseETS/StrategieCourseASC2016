@@ -10,41 +10,45 @@
 %  inclure son contenu dans le workspace courant
 %  ex : run('parameterGeneratorEclipseIX.m');
 %
-%  Note1 : l'utilisation de structures est encouragée dans ce fichier uniquement
+%  Note : l'utilisation de structures est encouragée dans ce fichier pour
+%  alléger le nombre d'arguments dans le simulateur
 %
 %  IMPORTANT : TOUJOURS INDIQUER LES UNITÉS UTILISÉS POUR CHAQUE VARIABLE !!!
 %
 %  Auteur : Julien Longchamp
 %  Date de création : 07-07-2016
-%  Dernière modification :
+%  Dernière modification : 17-01-2017 (JL) Changement de nom de variable : contraintes -> strategy
 %%
 
-% Ajout du chemin vers les outils nécessaires au fonctionnement du simulateur
-addpath('C:\Users\Strategy\Documents\MATLAB\StrategyEclipseIX\StrategieCourseASC2016\Outils');
-addpath('C:\Users\Strategy\Documents\MATLAB\StrategyEclipseIX\StrategieCourseASC2016\Outils\SolarAzEl');
+% ANCIENNE ARCHITECTURE
+% % Ajout du chemin vers les outils nécessaires au fonctionnement du simulateur
+% addpath('C:\Users\Strategy\Documents\MATLAB\StrategyEclipseIX\StrategieCourseASC2016\Outils');
+% addpath('C:\Users\Strategy\Documents\MATLAB\StrategyEclipseIX\StrategieCourseASC2016\Outils\SolarAzEl');
 
 
 %% Importation des modèles statiques
 % Importation des courbes de décharge des cellules NCR18650BF
 cellModel = load('Eclipse9_cells_discharge.mat');
-% Charge les coefficients de la courbe de l'irradiance du 41e parallèle Nord.  **** Voir le fichier TESTsolarradiation.m pour plus de détails. ****
+
+% IMPORTANT DE CHOISIR LES BONS COEFFICIENTS POUR LE CYCLE DU SOLEIL !
+%% Charge les coefficients de la courbe de l'irradiance du 41e parallèle Nord.  **** Voir le fichier TESTsolarradiation.m pour plus de détails. ****
 % load('SolarIrradianceLat41N.mat', 'irrandiance_coef');
 % Charge les coefficients du cycle du soleil pour la FSGP2016
 load('SoleilFSGPcoef.mat');
 
 %% Contraintes du parcours
-contraintes.vitesse_min = 20/3.6;   % m/s (60 km/h)
-contraintes.vitesse_moy = 30/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
-contraintes.vitesse_max = 120/3.5;  % m/s (105 km/h)
-contraintes.vitesse_ini = 0;        % m/s
-contraintes.accel_nom = 0.1;        % m/s^2
-contraintes.accel_max = 1;          % m/s^2
-contraintes.decel_nom = -0.03;      % m/s^2
-contraintes.SoC_ini = 0.36;            % Initial State of Charge (%)
-contraintes.SoC_min = 0.30;         % Final State of Charge (%)
+strategy.vitesse_min = 20/3.6;   % m/s (60 km/h)
+strategy.vitesse_moy = 30/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+strategy.vitesse_max = 120/3.5;  % m/s (105 km/h)
+strategy.vitesse_ini = 0;        % m/s
+strategy.accel_nom = 0.1;        % m/s^2
+strategy.accel_max = 1;          % m/s^2
+strategy.decel_nom = -0.03;      % m/s^2
+strategy.SoC_ini = 0.36;            % Initial State of Charge (%)
+strategy.SoC_min = 0.30;         % Final State of Charge (%)
 
 %% Paramètres du véhicule Éclipse 9
-eclipse9.masse_totale = 300;     % kg % ÉCLIPSE 9 SANS COQUE
+eclipse9.masse_totale = 300;     % kg % ÉCLIPSE 9 : 220 kg sans pilote, pilote avec ballastes : 80 kg
 eclipse9.aire_frontale = 1.25;   % m^2
 eclipse9.coef_trainee = 0.13; % Calculé le 30 juillet 2016 ASC jour 1  %0.125;%0.135;   % coefficient de trainée aérodynamique       ********** À VÉRIFIER **********
 %eclipse9.coef_trainee = 0.25;      % ÉCLIPSE 9 SANS COQUE
@@ -60,8 +64,12 @@ eclipse9.couple_nom = 16.2;    % Nm    (Pour un moteur)
 eclipse9.couple_max = 42;      % Nm    (Pour un moteur)
 eclipse9.puissance_max = 1800; % W     (Pour un moteur)
 
-%% Constantes physiques     % TODO : À remplacer par des vecteurs fournies par le module Eagle Tree
+%% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
+constantes.constante_universelle_gaz_parfaits = 8.3144621; % J/(k*mol)Constante universelle des gaz parfaits
+constantes.zero_absolu = 273.15; % Écart entre zéro degré Celcius et degrés Kelvins
+constantes.masse_molaire_air = 28.965338/1000; % kg/mol
+% CONSTANTES OBSOLÈTES
 % constantes.tempAmbiant = 273.15+20;  % Température ambiante (Kelvin)
 % constantes.absolutePressure = 101.325 * 1000; % Pa
 % constantes.specificAirConstant = 287.058; % J/(kg*K)
@@ -70,9 +78,6 @@ constantes.const_grav = 9.81;      % m/s^2
 % constantes.direction_vent = 220; % degrés
 % constantes.irrandiance_coef = irrandiance_coef; % Coefficients du polinôme représentant la densité de puissance incidente du soleil
 % constantes.densite_de_puissance_incidente = 800; % W/m^2                ******* TODO : À changer *******
-constantes.constante_universelle_gaz_parfaits = 8.3144621; % J/(k*mol)Constante universelle des gaz parfaits
-constantes.zero_absolu = 273.15; % Écart entre zéro degré Celcius et degrés Kelvins
-constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 
 %% Données météo
 % Les données météos peuvent être divisée en vecteurs [1xn] pour séparer l'information en n tranches de journées
@@ -89,12 +94,12 @@ meteo.sun_cycle_coef = sun_coef;
 reglement.impound_out = 7/24; % Batterie disponible à partir de 7h00
 reglement.impound_in = 20/24; % Batterie non-disponible à partir de 20h00
 reglement.fsgp_fin_recharge_matin = 9/24; % Fin de la recharge du matin à 8h45
-reglement.heure_depart = 13.25/24; % Départ à 9h00     (10h la première journée de la FSGP)
+reglement.heure_depart = 13.25/24; % Départ à 9h00     (10h la première journée de la FSGP) (Actuellement à 13h15)
 reglement.heure_arret = 18/24; % Arrêt à 18h00      (17h les deux dernières journées de la FSGP)
 % reglement.checkpoint = [350.762]; % km (Distance avant chaque checkpoint) **** ÉTAPE 1 UNIQUEMENT ****
 
 %% Valeurs initiales au départ
-etat_course.SoC_start = contraintes.SoC_ini;
+etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
 etat_course.vitesse_ini = 0; % m/s
 etat_course.heure_depart = datenum([2016,08,5,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]

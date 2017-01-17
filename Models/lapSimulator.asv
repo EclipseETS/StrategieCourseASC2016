@@ -20,7 +20,7 @@ function lapLog = lapSimulator(parcours, etat_course, cellModel, strategy, eclip
 %
 %  Auteur : Julien Longchamp
 %  Date de création : 17-06-2016
-%  Dernière modification : 17-01-2017 (JL) Changement de nom de variable : contraintes -> strategy
+%  Dernière modification : 17-01-2017 (JL) Changement de nom de variable contraintes -> strategy
 %%
 
 %distance_totale = parcours.distance(end);   % km
