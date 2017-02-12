@@ -1,7 +1,7 @@
 %% %% Éclipse 9
 %  Auteur : Julien Longchamp
 %  Date de création : 15-06-2016
-%  Dernière modification : 28-06-2015 JL
+%  Dernière modification : 07-02-2017 JL
 %
 % Ce script permet de traiter un fichier de données GPS en format .csv vers
 % le format .mat
@@ -10,7 +10,7 @@
 % entre chaque paire de points distancés de plus de 100 mètres et de
 % recalculer la pente entre deux points.
 
-% ************************ IMPORTANT *************************************
+% ***************************** IMPORTANT ********************************
 % Dans le présent script, il est nécessaire de changer le nom de fichier
 % source et du fichier de destination tel qu'indiqué plus loin.
 % ************************************************************************
@@ -21,8 +21,8 @@
 %  Instructions pour créer un fichier CSV   
 %  1- Créer un fichier .kml à partir de Google Earth ou autre.
 %  2- Cocher les options suivantes sur le site de GPSVisualizer :
-%       Output format: Plain test
-%       Plain text delimiter: semi-colon
+%       Output format: Plain text
+%       Plain text delimiter: comma
 %       Add estimated fields: slope(%), distance
 %       Add DEM elevation dada: USGS NED1
 %  3- Cliquer sur Convert et copier le texte en sortie dans Excel
@@ -30,16 +30,14 @@
 %  (coller les données restantes ensemble, ne pas laisser de ligne vide)
 %  5- Sauvegarder le fichier .csv à l'aide d'Excel (*** IMPORTANT de
 %  sauvegarder en format .csv)
-
-%  Instructions pour importer le fichier CVS dans Matlab
-%  1 - Utiliser la fonction "importGPSfromCSV.m" pour lire le fichier CSV
-%  2 - Utiliser la fonction "interpolationGPSdata.m" pour ajouter des points intermédiaires à tous les 100 mètres
-%  *** N'oubliez pas de renommez les fichiers de sortie des deux fonctions précédentes!
-%  3 - Vous pouvez à présent utiliser les fichiers main_simulateur.m et optim_etapes.m
+% 
+% Fonctions utilisees pour le traitement des donnes GPS
+% importGPSfromCSV.m -> Permet de lire un fichiers CSV et de le sauvegarder dans une structure Matlab
+% interpolationGPSdata.m -> Permet d'ajouter des points intermédiaires à tous les X mètres
 
 clc, clear all, close all
 
-% ************************ IMPORTANT *************************************
+% ***************************** IMPORTANT ********************************
 % Remplacer le nom du fichier source et du fichier cible ci-dessous
 % ************************************************************************
 
@@ -48,7 +46,7 @@ clc, clear all, close all
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\ASC2016_stage1_plus_speed.mat'
 % speed_limit_filename = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\ASC2016_route_stage1.xlsx';
 
-% FSPG 2016
+% FSGP 2016
 % fichier_source = 'R:\Eclipse\ELE\Eclipse%209\Projet\Simulateur d''autonomie\donnees_gps\PittRaceNorthTrack.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\PittRaceNorthTrack10m.mat'
 
@@ -56,27 +54,47 @@ clc, clear all, close all
 % fichier_source = 'R:\ELE\Eclipse 9\Projet\Simulateur d''autonomie\donnees_gps\TrackPMGInner.csv';
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner10m.mat'
 
+% CoTA (FSGP 2017)
+fichier_source = 'C:\Users\ClubEclipse\Downloads\CircuitOfTheAmericas.csv';
+fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\CircuitOfTheAmericas10m.mat'
+
+% ***************************** IMPORTANT ****************************************
+% Ajuster la distance maximale entre chaque point si nécessaire (Standard : 100 m)
+% ********************************************************************************
+interval_max = 10; % mètres      Distance maximale entre deux points
+
 
 % Charge un fichier source .csv dont le format est [Type Latitude Longitude Altitude(m) Distance(km) Interval(m)]
 parcours = importGPSfromCSV(fichier_source);
-
-interval_max = 100; % mètres      Distance maximale entre deux points
 newParcours = linearInterpolationGPSdata(parcours, interval_max);
 
+% Génère des figures 2D et 3D du parcours.
+figure, hold on, title('Carte 2D du parcours')
+plot(parcours.latitude, parcours.longitude, '*')
+plot(newParcours.latitude, newParcours.longitude, '.r')
+legend('Données brutes', 'Données traitées', 'location', 'southeast')
+xlabel('Longitude')
+ylabel('Latitude')
 
-
-figure, plot(parcours.latitude, parcours.longitude, '.')
-figure, plot3(parcours.latitude, parcours.longitude, parcours.altitude, '.')
-
-figure, plot(newParcours.latitude, newParcours.longitude, '.r')
-figure, plot3(newParcours.latitude, newParcours.longitude, newParcours.altitude, 'r.')
+figure, hold on, title('Carte 3D du parcours')
+plot3(parcours.latitude, parcours.longitude, parcours.altitude, '*')
+plot3(newParcours.latitude, newParcours.longitude, newParcours.altitude, 'r.')
+legend('Données brutes', 'Données traitées', 'location', 'southeast')
+xlabel('Longitude')
+ylabel('Latitude')
+zlabel('Altitude (m)')
 
 figure, hold on, title('Altitude')
 plot(parcours.distance, parcours.altitude, '.')
 plot(newParcours.distance, newParcours.altitude, 'r.')
-figure, plot(newParcours.distance, newParcours.slope), title('Pente')
+legend('Données brutes', 'Données traitées')
+xlabel('Distance (km')
+ylabel('Altitude (m)')
 
-
+figure, hold on, title('Pente filtrée')
+plot(newParcours.distance, newParcours.slope)
+xlabel('Distance (km')
+ylabel('Pente (%)')
 
 
 %% Ajout de l'information sur la vitesse maximale du parcours

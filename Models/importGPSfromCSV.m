@@ -42,7 +42,7 @@ function data = importGPSfromCSV(filename, startRow, endRow)
 
 
 %% Initialize variables.
-delimiter = ';';
+delimiter = ',';
 if nargin<=2
     startRow = 2;
     endRow = inf;

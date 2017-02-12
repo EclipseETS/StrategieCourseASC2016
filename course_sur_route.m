@@ -28,7 +28,7 @@ end
 run('parameterGeneratorEclipseIX.m')
 
 etat_course.index_depart = 13170; %round(0.47 * length(parcours.distance)); % Départ à un pourcentage du parcours
-routeLog = routeSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes, reglement, meteo);
+routeLog = routeSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
 
 routeLog.puissance_elec_traction(isnan(routeLog.puissance_elec_traction)) = 0;
 

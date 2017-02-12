@@ -33,7 +33,7 @@ outOfFuel = 0; % Flag qui tombe à 1 lorsque la batterie est à plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.nbLap = etat_course.nbLap+1;
-    lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, contraintes, eclipse9, constantes, reglement, meteo);
+    lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
     
     etat_course.SoC_start = lapLog(etat_course.nbLap).SoC(end);
     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
