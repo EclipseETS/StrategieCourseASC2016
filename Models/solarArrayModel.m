@@ -1,4 +1,4 @@
-function [puissancePV, Elevation] = solarArrayModel(heure, densite_de_puissance_incidente, surSupport, sun_cycle_coef)
+function [puissancePV, Elevation] = solarArrayModel(heure, densite_de_puissance_incidente, surSupport, sun_coef)
 
 %% Éclipse 9
 %  Modèle du système photovoltaïque d'Éclipse 9
@@ -30,9 +30,9 @@ function [puissancePV, Elevation] = solarArrayModel(heure, densite_de_puissance_
 
 if nargin == 0
     clc, clear all, close all
-    addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\SolarAzEl');
+    addpath('..\Outils\SolarAzEl');
+    load('..\Data\SoleilFSGPcoef.mat')
 else   
-    
     % Charge le model des paneaux solaires créé avec la fonction solarArrayModel (sans arguments)
     load('PV_efficiency_model.mat', 'PV_efficiency_model');
 end
@@ -68,14 +68,18 @@ if nargin == 0
     save('PV_efficiency_model.mat', 'PV_efficiency_model');
 
     PV_loss_curve = polyval(PV_loss_model, 0:90);
-    figure, hold on, grid on
+    figure, hold on, grid on, title('Pertes dans l''encapsulation PV')
     plot(PV_angle_datapoint, PV_loss_datapoint, 'o')
     plot(0:90, PV_loss_curve, 'r')
+    xlabel('Angle (deg)')
+    ylabel('Losses (W)')
     
     PV_eff_curve = polyval(PV_efficiency_model, 0:90);
-    figure, hold on, grid on
+    figure, hold on, grid on, title('PV Efficiency')
     plot(PV_angle_datapoint, efficaciteCellPV, 'o')
     plot(0:90, PV_eff_curve, 'r')  
+    xlabel('Angle (deg)')
+    ylabel('Efficiency (%)')
     
 end
 
@@ -83,7 +87,7 @@ if surSupport == 0
     % Calcul de l'élévation et de l'azimuth du soleil
 %     [Az El] = SolarAzEl(heure,latitude,longitude,altitude/1000);
 %     [ Elevation Azimuth] = SunElevationInstant(heure,latitude,longitude,altitude);
-    Elevation = polyval(sun_cycle_coef, mod(heure, 1)); % On calcule l'élévation du soleil à l'aide d'une parabole (Voir sunCycleFSGP2016.m) L'heure doit être comprise entre 0 et 1, on élimine l'année et le jour avec le modulo 1
+    Elevation = polyval(sun_coef, mod(heure, 1)); % On calcule l'élévation du soleil à l'aide d'une parabole (Voir sunCycleFSGP2016.m) L'heure doit être comprise entre 0 et 1, on élimine l'année et le jour avec le modulo 1
 elseif surSupport == 1
     Elevation = 90; % Panneaux perpendiculaires au soleil
 end

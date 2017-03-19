@@ -107,6 +107,7 @@ for k=2:nbPoints
     
     heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
 
+    % Calcul de la puissance PV
     densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
     [puissancePV_sansNuages Elevation(k)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
     puissancePV(k) = meteo.couverture_ciel(index_meteo) .* puissancePV_sansNuages;
@@ -165,6 +166,8 @@ end
 
 
 %% Valeurs de sortie de la fonction lapSimulator
+% Il est est possible d'ajouter de nouveaux champs dans la structure lapLog
+% simlement en ajoutant une nouvelle ligne. ex : lapLog.SoC = SoC;
 lapLog.temps_cumulatif = temps_cumulatif;   % (s)
 lapLog.SoC = SoC; % (%)
 lapLog.Ibatt = Ibatt;   % Adc

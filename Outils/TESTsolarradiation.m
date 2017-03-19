@@ -1,6 +1,7 @@
 clc, close all, clear all
 
 addpath('C:\Users\club\Git\StrategieCourseASC2016\Outils\solarradiation');
+addpath('solarradiation')
 
 dem = zeros(2);
 lat = [41 41];
