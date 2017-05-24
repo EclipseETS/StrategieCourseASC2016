@@ -244,13 +244,28 @@ end
 % SoC(1) = SoC(end);
 % SoC(2) = SoC(end);
 
-%% Valeurs de sortie de la fonction lapSimulator
+% %% Valeurs de sortie de la fonction lapSimulator
+% routeLog.temps_cumulatif = temps_cumulatif;   % (s)
+% routeLog.SoC = SoC; % (%)
+% routeLog.Ibatt = Ibatt;   % Adc
+% routeLog.Vbatt = batteryModel(SoC, Ibatt); % Vdc
+% routeLog.profil_force_traction = profil_force_traction; % N
+% routeLog.profil_vitesse = profil_vitesse; % rad/s
+% routeLog.puissance_moteurs = puissance_moteurs; % W
+% routeLog.puissance_elec_totale = puissance_elec_totale; % W
+% routeLog.energie_fournie_totale = energie_depensee_totale; % Wh
+% routeLog.outOfFuel = outOfFuel;   % boolean
+% routeLog.heure_finale = heure; % datenum
+% routeLog.puissance_elec_totale = puissance_elec_totale; % W
+% routeLog.puissancePV = puissancePV; % W
+% % routeLog.puissance_elec_traction = puissance_elec_traction; % W
 routeLog.temps_cumulatif = temps_cumulatif;   % (s)
 routeLog.SoC = SoC; % (%)
 routeLog.Ibatt = Ibatt;   % Adc
 routeLog.Vbatt = batteryModel(SoC, Ibatt); % Vdc
 routeLog.profil_force_traction = profil_force_traction; % N
 routeLog.profil_vitesse = profil_vitesse; % rad/s
+routeLog.profil_accel = profil_accel; % m/s^2
 routeLog.puissance_moteurs = puissance_moteurs; % W
 routeLog.puissance_elec_totale = puissance_elec_totale; % W
 routeLog.energie_fournie_totale = energie_depensee_totale; % Wh
@@ -259,5 +274,6 @@ routeLog.heure_finale = heure; % datenum
 routeLog.puissance_elec_totale = puissance_elec_totale; % W
 routeLog.puissancePV = puissancePV; % W
 routeLog.puissance_elec_traction = puissance_elec_traction; % W
+routeLog.elevation = Elevation; % degrés
 end
 

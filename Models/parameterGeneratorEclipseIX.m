@@ -39,14 +39,14 @@ cellModel = load('Data/Eclipse9_cells_discharge.mat'); % Octave
 load('Data/SoleilFSGPcoef.mat'); % Octave
 
 %% Contraintes du parcours
-strategy.vitesse_min = 20/3.6;   % m/s (60 km/h)
-strategy.vitesse_moy = 30/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
+strategy.vitesse_min = 50/3.6;   % m/s (60 km/h)
+strategy.vitesse_moy = 65/3.6;   % m/s (80 km/h) *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.5;  % m/s (105 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
 strategy.accel_max = 1;          % m/s^2
 strategy.decel_nom = -0.03;      % m/s^2
-strategy.SoC_ini = 0.36;            % Initial State of Charge (%)
+strategy.SoC_ini = 0.99;            % Initial State of Charge (%)
 strategy.SoC_min = 0.30;         % Final State of Charge (%)
 
 %% Param�tres du v�hicule �clipse 9
@@ -84,11 +84,11 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 %% Donn�es m�t�o
 % Les donn�es m�t�os peuvent �tre divis�e en vecteurs [1xn] pour s�parer l'information en n tranches de journ�es
 % ex. meteo.temperature = [20 28] -> 20�de 7hjusqu'� midi et 28�de midi jusqu'� 20h
-meteo.vitesse_vent = [9.25 9.25]; % km/h
+meteo.vitesse_vent = [0 0]; % km/h
 meteo.direction_vent = [0 0]; % degr�s 
-meteo.couverture_ciel = [1.5/6 1.5/6]; % Pourcentage du ciel d�gag� (Multiplie la puissance calcul�e des panneaux)
+meteo.couverture_ciel = [1 1]; % Pourcentage du ciel d�gag� (Multiplie la puissance calcul�e des panneaux)
 meteo.pression_atmospherique = [101.9 101.9]; % kPa
-meteo.temperature = [34 34]; % Degr� celcius
+meteo.temperature = [30 30]; % Degr� celcius
 meteo.mv_air = 1000*meteo.pression_atmospherique*constantes.masse_molaire_air ./ (constantes.constante_universelle_gaz_parfaits * (constantes.zero_absolu + meteo.temperature)); % kg/m^3
 meteo.sun_cycle_coef = sun_coef;
 
@@ -96,7 +96,7 @@ meteo.sun_cycle_coef = sun_coef;
 reglement.impound_out = 7/24; % Batterie disponible � partir de 7h00
 reglement.impound_in = 20/24; % Batterie non-disponible � partir de 20h00
 reglement.fsgp_fin_recharge_matin = 9/24; % Fin de la recharge du matin � 8h45
-reglement.heure_depart = 13.25/24; % D�part � 9h00     (10h la premi�re journ�e de la FSGP) (Actuellement � 13h15)
+reglement.heure_depart = 9/24; % D�part � 9h00     (10h la premi�re journ�e de la FSGP) (Actuellement � 13h15)
 reglement.heure_arret = 18/24; % Arr�t � 18h00      (17h les deux derni�res journ�es de la FSGP)
 % reglement.checkpoint = [350.762]; % km (Distance avant chaque checkpoint) **** �TAPE 1 UNIQUEMENT ****
 

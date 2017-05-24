@@ -147,8 +147,9 @@ for k=2:nbPoints
 %     end
     
     if SoC(k) < strategy.SoC_min
-        SoC(k) = strategy.SoC_min;
+        SoC(k:end) = strategy.SoC_min;
         outOfFuel = 1;
+        break; % Terminate the 'for' loop
         %disp('OUT OF FUEL')
         %fprintf('Distance raced : %5.2d (km) \n', round(parcours.distance(k)));
         %fprintf('Percentage covered : %3.2f%%\n\n', parcours.distance(k)/parcours.distance(end)*100);
@@ -183,6 +184,7 @@ lapLog.heure_finale = heure; % datenum
 lapLog.puissance_elec_totale = puissance_elec_totale; % W
 lapLog.puissancePV = puissancePV; % W
 lapLog.puissance_elec_traction = puissance_elec_traction; % W
-lapLog.elevation = Elevation; % degrés
+lapLog.elevation = [Elevation zeros(1, length(SoC)-length(Elevation))]; % degrés
+lapLog.indexArret = k;
 end
 

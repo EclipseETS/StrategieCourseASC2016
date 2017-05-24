@@ -6,7 +6,8 @@
 %
 %  Auteur : Julien Longchamp
 %  Date de creation : 17-06-2016
-%  Dernieres modifications : 13-01-2017 (JL) Redaction du guide de l'utilisateur
+%  Dernieres modifications : 01-04-2017 (JL)
+%                            13-01-2017 (JL) Redaction du guide de l'utilisateur
 %                            07-07-2016 (JL)
 %%
 
@@ -18,10 +19,11 @@ addpath('Models');
 addpath('Outils');
 
 %% Importation des donnees du circuit desire (Voir "traitementDonneesGPS.m")
-%load('etapesASC2016_continuous.mat')
+% load('etapesASC2016_continuous.mat')
 %load('TrackPMGInner10m.mat')
-load('Data/TrackPMGInner10m.mat') % Octave
+% load('Data/TrackPMGInner10m.mat') % Octave
 %load('PittRaceNorthTrack10m.mat')
+load('Data/ASC2016_stage3_plus_speed.mat')
 parcours = newParcours;
 
 %% Charge tous les parametres de la simulation
@@ -29,7 +31,7 @@ run('Models/parameterGeneratorEclipseIX.m');
 
 
 %% Simulation des tours de piste
-nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
+nbLapMax = 1;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe e 1 lorsque la batterie est e plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
@@ -61,17 +63,23 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     
 end
 
-for k = 1:length(lapLog)
+for k = 1:length(lapLog)-1
     vitesse_moyenne(k) = mean(lapLog(k).profil_vitesse);
     puissance_moyenne(k) = mean(lapLog(k).puissance_elec_traction);
     puissancePV_moyenne(k) = mean(lapLog(k).puissancePV);
 end
+% Dernier tour
+if length(lapLog) == 1; k = 0; end
+vitesse_moyenne(k+1) = mean(lapLog(end).profil_vitesse(1:lapLog(end).indexArret));
+puissance_moyenne(k+1) = mean(lapLog(end).puissance_elec_traction(1:lapLog(end).indexArret));
+puissancePV_moyenne(k+1) = mean(lapLog(end).puissancePV(1:lapLog(end).indexArret));
+    
 vitesse_moyenne_totale = mean(vitesse_moyenne);
 puissance_moyenne_totale = mean(puissance_moyenne);
 puissancePV_moyenne_totale = mean(puissancePV_moyenne);
 
 fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
-fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*parcours.distance(end));
+fprintf('Distance parcourue %3.2f km \n', (etat_course.nbLap-1)*parcours.distance(end)+parcours.distance(lapLog(end).indexArret));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
@@ -79,28 +87,57 @@ fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
 h1 = figure;
 hold on, grid on, title('evolution de la puissance')
 h2 = figure;
-hold on, grid on, title('evolution de l''''etat de charge')
+hold on, grid on, title('Évolution de l''''état de charge')
+h3 = figure;
+hold on, grid on, title('Performance du systeme PV')
+temps_total = 0;
 for k = 1:length(lapLog)
+    if k == length(lapLog)
+        m = lapLog.indexArret;
+    else
+        m = length(parcours.distance)
+    end
     figure(h1)
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissancePV, 'dr')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs, '.k')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*1000, '--m')
+    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale(1:m), '.b')
+    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m), 'dr')
+    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs(1:m), '.k')
+    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*1000, '--m')
     
     figure(h2)
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*100, '--m')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse*3.6, 'g')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_accel*36, 'r')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).elevation, '.b')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*100, '--m')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse(1:m), 'g')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_accel(1:m), 'r')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m)/100, '.b')
+    
+    % Passe de pirate pour faire des graphiques pour ENR889
+    subplot(2,1,1), hold on
+    plot(parcours.distance(1:m), parcours.altitude(1:m))
+    subplot(2,1,2), hold on
+    temps = lapLog(k).temps_cumulatif(1:m)/3600;
+    plot(temps, lapLog(k).profil_vitesse(1:m)*3.6/65, '.g','MarkerSize',1)
+    plot(temps, lapLog(k).SoC(1:m), '--m')
+    plot(temps, lapLog(k).puissancePV(1:m)/1000, '--r')
+
+    
+    figure(h3)
+    plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV);
+    
+    temps_total = temps_total+lapLog(k).temps_cumulatif(end);    
 end
+
+% figure
+% plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV)
 
 figure(h1)
 xlabel('distance (km)')
 ylabel('puissance (W)')
 legend('ELE', 'PV', 'MEC', 'SoC');
 figure(h2)
-xlabel('distance (km)')
-legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
+xlabel('Temps (h)')
+legend( 'Vitesse normalisée', 'État de charge (%)', 'Puissance PV (kW)');
+
+nb_heures = temps_total/3600
+
 
 % A = parcours.latitude;
 % B = parcours.longitude;
@@ -110,3 +147,9 @@ legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
 
 
+% figure, hold on, title('Test')
+% [hAx,hLine1,hLine2] = plotyy(lapLog(k).temps_cumulatif(1:m)/3600,lapLog(k).SoC(1:m),lapLog(k).temps_cumulatif(1:m)/3600, lapLog(k).puissancePV(1:m));
+% % plot(lapLog(k).temps_cumulatif, lapLog(k).temps_cumulatif.profil_vitesse(1:m)*3.6);
+% xlabel('Temps')
+% ylabel(hAx(1),'State of Charge %') % left y-axis
+% ylabel(hAx(2),'Puissance PV (W)') % right y-axis

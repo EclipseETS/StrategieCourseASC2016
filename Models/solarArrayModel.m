@@ -41,7 +41,7 @@ end
 NbCellPV = 391;
 SurfaceCellPV = 0.01533282; % m^2
 SurfaceTotalePV = NbCellPV*SurfaceCellPV;
-EfficaciteSunPowerBinH = 0.233; % (%)
+EfficaciteSunPowerBinH = 0.233; % (%) Cellule SunPower E60
 
 %% Pour caculer la puissance des panneaux à un point d'opération précis
 % À exécuter une première fois en appuyant simplement sur F5 pour générer le polynôme
@@ -58,7 +58,8 @@ if nargin == 0
     densite_de_puissance_incidente = 800;
     surSupport = 0;
     
-    PV_loss_datapoint  = ([3.1  2.5  2.0 2.5  3.0  4.1  6] - 2) / 100; % (%)  Le -2 provient d'un échange de courriel entre Gocherman et LP au sujet de l'encapsulation zero losses
+%     PV_loss_datapoint  = ([3.1  2.5  2.2 2.5  3.0  4.1  6] - 2) / 100; % (%)  Le -2 provient d'un échange de courriel entre Gocherman et LP au sujet de l'encapsulation zero losses
+    PV_loss_datapoint  = ([3.1  2.5  2.2 2.5  3.0  4.1  6]-1) / 100; % (%)  Le -2 provient d'un échange de courriel entre Gocherman et LP au sujet de l'encapsulation zero losses
     PV_angle_datapoint = [0    20   40  50   60    80  90];
     
     PV_loss_model = polyfit(PV_angle_datapoint, PV_loss_datapoint, 5);
@@ -68,18 +69,45 @@ if nargin == 0
     save('PV_efficiency_model.mat', 'PV_efficiency_model');
 
     PV_loss_curve = polyval(PV_loss_model, 0:90);
-    figure, hold on, grid on, title('Pertes dans l''encapsulation PV')
+%     figure, hold on, grid on, title('Pertes dans l''encapsulation PV')
+    figure, subplot(2,1,1), hold on, grid on, title('Pertes dans l''encapsulation PV')
     plot(PV_angle_datapoint, PV_loss_datapoint, 'o')
     plot(0:90, PV_loss_curve, 'r')
     xlabel('Angle (deg)')
     ylabel('Losses (W)')
+    legend('Manufacturier', 'Approximation')
     
     PV_eff_curve = polyval(PV_efficiency_model, 0:90);
-    figure, hold on, grid on, title('PV Efficiency')
+%     figure, hold on, grid on, title('PV Efficiency')
+    subplot(2,1,2), hold on, grid on, title('PV Efficiency')
     plot(PV_angle_datapoint, efficaciteCellPV, 'o')
     plot(0:90, PV_eff_curve, 'r')  
     xlabel('Angle (deg)')
     ylabel('Efficiency (%)')
+    
+    %% MPPT
+    % From http://www.drivetek.ch/fileadmin/user_upload/MPPT-Race_Spec_Sheet_Version4_lv_bruegg.pdf
+    MPPT_eff_datapoint  = [96.25 97 97.35 97.3 97  96.75 96.5 96.25 96] / 100; % (%)  Le -2 provient d'un échange de courriel entre Gocherman et LP au sujet de l'encapsulation zero losses
+    MPPT_power_datapoint = [25    50 100   150  200 250   300  350   400]; % W
+    MPPT_loss_datapoint = MPPT_power_datapoint - MPPT_power_datapoint.*MPPT_eff_datapoint;
+    
+    MPPT_loss_model = polyfit(MPPT_power_datapoint, MPPT_loss_datapoint, 2);
+    save('MPPT_loss_model.mat', 'MPPT_loss_model');
+    MPPT_loss_curve = polyval(MPPT_loss_model, 0:450);
+    
+    figure
+    subplot(2,1,1), hold on, grid on, title('MPPT Losses')
+    plot(MPPT_power_datapoint, MPPT_loss_datapoint, 'o')
+    plot(0:450, MPPT_loss_curve)
+    xlabel('Input Power (W)')
+    ylabel('Losses (%)')
+    legend('Manufacturier', 'Approximation')
+    
+    subplot(2,1,2), hold on, grid on, title('MPPT Efficiency')
+    plot(MPPT_power_datapoint, MPPT_eff_datapoint, 'o')
+    plot(0:450, ((0:450)-MPPT_loss_curve)./(0:450))
+    xlabel('Input Power (W)')
+    ylabel('Efficiency (%)')    
     
 end
 

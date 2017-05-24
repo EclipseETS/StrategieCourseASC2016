@@ -12,8 +12,8 @@
 clc, clear all, close all
 
 %% Importation des données du circuit à réaliser (Voir "traitementDonneesGPS.m")
-%load('etapesASC2016_continuous.mat')
-load('ASC2016_stage3_plus_speed.mat')
+% load('etapesASC2016_continuous.mat')
+load('Data\ASC2016_stage3_plus_speed.mat')
 parcours = newParcours;
 
 %% Vérification de la présence des limites de vitesse dans le fichier du parcours
@@ -25,7 +25,7 @@ catch E
 end
 
 %% Charge tous les paramètres de la simulation5
-run('parameterGeneratorEclipseIX.m')
+run('Models/parameterGeneratorEclipseIX.m');
 
 etat_course.index_depart = 13170; %round(0.47 * length(parcours.distance)); % Départ à un pourcentage du parcours
 routeLog = routeSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
@@ -50,7 +50,7 @@ h1 = figure;
 hold on, grid on, title('FSGP 2016')
 h2 = figure;
 hold on, grid on, title('FSGP 2016')
-
+temps_total = 0;
 for k = 1:length(routeLog)
 figure(h1)
 plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.puissance_elec_totale, 'b')
@@ -65,6 +65,7 @@ plot(parcours.distance + (k-1)*parcours.distance(end), parcours.speed_limit, 'r'
 
 % plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.profil_accel*36, 'r')
 
+    temps_total = temps_total+routeLog.temps_cumulatif(end); 
 end
 
 figure(h1)
@@ -75,6 +76,7 @@ figure(h2)
 xlabel('distance (km)')
 legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 
+nb_heures = temps_total/3600
 
 
 % A = parcours.latitude;
@@ -85,11 +87,15 @@ legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
 
 
-figure, hold on, grid on
-plot(parcours.distance, parcours.altitude);
+figure, hold on, title('Performance PV')
+plot(routeLog.temps_cumulatif/3600, routeLog.puissancePV)
+plot(routeLog.temps_cumulatif/3600, routeLog.SoC*100)
 
-figure, hold on, grid on
-plot3(parcours.longitude, parcours.latitude, parcours. altitude)
+% figure, hold on, grid on
+% plot(parcours.distance, parcours.altitude);
 
-figure, hold on, grid on
-plot(parcours.distance)
+% figure, hold on, grid on
+% plot3(parcours.longitude, parcours.latitude, parcours. altitude)
+
+% figure, hold on, grid on
+% plot(parcours.distance)
