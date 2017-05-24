@@ -55,8 +55,8 @@ clc, clear all, close all
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner10m.mat'
 
 % CoTA (FSGP 2017)
-fichier_source = 'C:\Users\ClubEclipse\Downloads\CircuitOfTheAmericas.csv';
-fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\CircuitOfTheAmericas10m.mat'
+fichier_source = 'C:\Users\ClubEclipse\Documents\MATLAB\FSGP2017_CircuitOfTheAmericas.csv';
+fichier_cible = 'C:\Git\StrategieCourseASC2016\Data\FSGP2017_CircuitOfTheAmericas10m.mat';
 
 % ***************************** IMPORTANT ****************************************
 % Ajuster la distance maximale entre chaque point si nécessaire (Standard : 100 m)
@@ -127,4 +127,4 @@ if exist('speed_limit_filename', 'var')
 end
 
 
-% save(fichier_cible, 'newParcours')
+save(fichier_cible, 'newParcours')

@@ -147,7 +147,8 @@ for k=2:nbPoints
 %     end
     
     if SoC(k) < strategy.SoC_min
-        SoC(k:end) = strategy.SoC_min;
+        %SoC(k:end) = strategy.SoC_min;
+        SoC(k:end) = SoC(k);
         outOfFuel = 1;
         break; % Terminate the 'for' loop
         %disp('OUT OF FUEL')

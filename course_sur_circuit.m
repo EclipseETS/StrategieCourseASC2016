@@ -19,11 +19,8 @@ addpath('Models');
 addpath('Outils');
 
 %% Importation des donnees du circuit desire (Voir "traitementDonneesGPS.m")
-% load('etapesASC2016_continuous.mat')
-%load('TrackPMGInner10m.mat')
-% load('Data/TrackPMGInner10m.mat') % Octave
-%load('PittRaceNorthTrack10m.mat')
-load('Data/ASC2016_stage3_plus_speed.mat')
+%load('Data/ASC2016_stage3_plus_speed.mat')
+load('FSGP2017_CircuitOfTheAmericas10m.mat')
 parcours = newParcours;
 
 %% Charge tous les parametres de la simulation
@@ -31,7 +28,7 @@ run('Models/parameterGeneratorEclipseIX.m');
 
 
 %% Simulation des tours de piste
-nbLapMax = 1;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
+nbLapMax = ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe e 1 lorsque la batterie est e plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
@@ -83,6 +80,8 @@ fprintf('Distance parcourue %3.2f km \n', (etat_course.nbLap-1)*parcours.distanc
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
+fprintf('SoC début/fin %3.2f  /  %3.2f \n', strategy.SoC_ini, lapLog(end).SoC(end));
+
 
 h1 = figure;
 hold on, grid on, title('evolution de la puissance')
@@ -95,7 +94,7 @@ for k = 1:length(lapLog)
     if k == length(lapLog)
         m = lapLog.indexArret;
     else
-        m = length(parcours.distance)
+        m = length(parcours.distance);
     end
     figure(h1)
     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale(1:m), '.b')
