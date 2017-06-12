@@ -47,7 +47,7 @@ strategy.accel_nom = 0.1;        % m/s^2
 strategy.accel_max = 1;          % m/s^2
 strategy.decel_nom = -0.03;      % m/s^2
 strategy.SoC_ini = 0.99;            % Initial State of Charge (%)
-strategy.SoC_min = 0.30;         % Final State of Charge (%)
+strategy.SoC_min = 0.25;         % Final State of Charge (%)
 
 %% Paramétres du véhicule éclipse 9
 eclipse9.masse_totale = 300;     % kg % éCLIPSE 9 : 220 kg sans pilote + 80 kg pilote avec ballaste

@@ -29,7 +29,7 @@ run('Models/parameterGeneratorEclipseIX.m');
 
 %% Simulation des tours de piste
 nbLapMax = ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
-outOfFuel = 0; % Flag qui tombe e 1 lorsque la batterie est e plat
+outOfFuel = 0; % Flag qui tombe à 1 lorsque la batterie est à plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.nbLap = etat_course.nbLap+1;
@@ -75,67 +75,68 @@ vitesse_moyenne_totale = mean(vitesse_moyenne);
 puissance_moyenne_totale = mean(puissance_moyenne);
 puissancePV_moyenne_totale = mean(puissancePV_moyenne);
 
+temps_total = lapLog(k).temps_cumulatif(end)
+
 fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
 fprintf('Distance parcourue %3.2f km \n', (etat_course.nbLap-1)*parcours.distance(end)+parcours.distance(lapLog(end).indexArret));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
 fprintf('SoC début/fin %3.2f  /  %3.2f \n', strategy.SoC_ini, lapLog(end).SoC(end));
+fprintf('Nombre d''heures %3.2f \n', temps_total/3600);
+
+%% Display figures
+% h1 = figure;
+% hold on, grid on, title('evolution de la puissance')
+% h2 = figure;
+% hold on, grid on, title('Évolution de l''''état de charge')
+% h3 = figure;
+% hold on, grid on, title('Performance du systeme PV')
+% temps_total = 0;
+% for k = 1:length(lapLog)
+%     if k == length(lapLog)
+%         m = lapLog.indexArret;
+%     else
+%         m = length(parcours.distance);
+%     end
+%     figure(h1)
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale(1:m), '.b')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m), 'dr')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs(1:m), '.k')
+%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*1000, '--m')
+%     
+%     figure(h2)
+% %     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*100, '--m')
+% %     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse(1:m), 'g')
+% %     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_accel(1:m), 'r')
+% %     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m)/100, '.b')
+%     
+%     % Passe de pirate pour faire des graphiques pour ENR889
+%     subplot(2,1,1), hold on
+%     plot(parcours.distance(1:m), parcours.altitude(1:m))
+%     subplot(2,1,2), hold on
+%     temps = lapLog(k).temps_cumulatif(1:m)/3600;
+%     plot(temps, lapLog(k).profil_vitesse(1:m)*3.6/65, '.g','MarkerSize',1)
+%     plot(temps, lapLog(k).SoC(1:m), '--m')
+%     plot(temps, lapLog(k).puissancePV(1:m)/1000, '--r')
+% 
+%     figure(h3)
+%     plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV);
+%     temps_total = temps_total+lapLog(k).temps_cumulatif(end);    
+% end
+% 
+% % figure
+% % plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV)
+% 
+% figure(h1)
+% xlabel('distance (km)')
+% ylabel('puissance (W)')
+% legend('ELE', 'PV', 'MEC', 'SoC');
+% figure(h2)
+% xlabel('Temps (h)')
+% legend( 'Vitesse normalisée', 'État de charge (%)', 'Puissance PV (kW)');
 
 
-h1 = figure;
-hold on, grid on, title('evolution de la puissance')
-h2 = figure;
-hold on, grid on, title('Évolution de l''''état de charge')
-h3 = figure;
-hold on, grid on, title('Performance du systeme PV')
-temps_total = 0;
-for k = 1:length(lapLog)
-    if k == length(lapLog)
-        m = lapLog.indexArret;
-    else
-        m = length(parcours.distance);
-    end
-    figure(h1)
-    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale(1:m), '.b')
-    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m), 'dr')
-    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs(1:m), '.k')
-    plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*1000, '--m')
-    
-    figure(h2)
-%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).SoC(1:m)*100, '--m')
-%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse(1:m), 'g')
-%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).profil_accel(1:m), 'r')
-%     plot(parcours.distance(1:m) + (k-1)*parcours.distance(end), lapLog(k).puissancePV(1:m)/100, '.b')
-    
-    % Passe de pirate pour faire des graphiques pour ENR889
-    subplot(2,1,1), hold on
-    plot(parcours.distance(1:m), parcours.altitude(1:m))
-    subplot(2,1,2), hold on
-    temps = lapLog(k).temps_cumulatif(1:m)/3600;
-    plot(temps, lapLog(k).profil_vitesse(1:m)*3.6/65, '.g','MarkerSize',1)
-    plot(temps, lapLog(k).SoC(1:m), '--m')
-    plot(temps, lapLog(k).puissancePV(1:m)/1000, '--r')
-
-    
-    figure(h3)
-    plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV);
-    
-    temps_total = temps_total+lapLog(k).temps_cumulatif(end);    
-end
-
-% figure
-% plot(lapLog(k).temps_cumulatif, lapLog(k).puissancePV)
-
-figure(h1)
-xlabel('distance (km)')
-ylabel('puissance (W)')
-legend('ELE', 'PV', 'MEC', 'SoC');
-figure(h2)
-xlabel('Temps (h)')
-legend( 'Vitesse normalisée', 'État de charge (%)', 'Puissance PV (kW)');
-
-nb_heures = temps_total/3600
 
 
 % A = parcours.latitude;

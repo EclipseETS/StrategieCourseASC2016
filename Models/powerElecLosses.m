@@ -45,6 +45,7 @@ totalMotorsInputPower = mecPowerDeuxMoteurs+2*(copperLoss+eddyCurrentLoss+windin
 efficiencyMotors = mecPowerDeuxMoteurs./ totalMotorsInputPower; % Percent
 motorsLosses = 2*(copperLoss+eddyCurrentLoss+windingLoss);
 
+
 %% Modèle de la batterie
 %load('Eclipse9_cells_discharge.mat', 'p1', 'p2', 'p3'); % Importation des courbes de décharge des batteries
 decharge0C2 = cellModel.decharge0C2;    % Courbe de décharge à 0.2 C  =~ 7.37  Adc

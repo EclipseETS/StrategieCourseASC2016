@@ -148,7 +148,8 @@ for k=2:nbPoints
     
     if SoC(k) < strategy.SoC_min
         %SoC(k:end) = strategy.SoC_min;
-        SoC(k:end) = SoC(k);
+        SoC(k:end) = SoC(k);                         % Fixe le SoC constant jusqu'à la fin du tour
+        temps_cumulatif(k:end) = temps_cumulatif(k); % Fixe le temps cumulatif constant jusqu'à la fin du tour
         outOfFuel = 1;
         break; % Terminate the 'for' loop
         %disp('OUT OF FUEL')
