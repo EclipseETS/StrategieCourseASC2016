@@ -15,14 +15,22 @@ for k = 1:numel(list)
     folders=regexp(fullpath,'\','split');
     
     if numel(data.time) == numel(data.DRIVE_L_VEHICLE_VELOCITY_ID)    
-    figure, hold on, title([folders(end-2) ' : Speed'])
+    nameFig = [folders(end-2) ; ' : Speed'];    
+    figure('Name', char(nameFig)), hold on, title(nameFig)
     plot(data.time, data.DRIVE_L_VEHICLE_VELOCITY_ID)
     plot(data.time, data.DRIVE_R_VEHICLE_VELOCITY_ID, 'r')
     legend('Drive LEFT', 'Drive RIGTH')
     xlabel('Time')
     ylabel('Speed')    
     
-    mecPower = data.DRIVE_L_VEHICLE_VELOCITY_ID .* 
+%     nameFig = [folders(end-2) ; ' : Batterie'];     
+%     figure('Name', char(nameFig)), hold on, title(nameFig)
+%     plotyy(data.time, data.BMS_PACK_CURRENT_ID,data.time, data.BMS_PACK_VOLTAGE_ID)
+%     %plot(data.time, data.BMS_PACK_VOLTAGE_ID, 'r')
+%     legend('Batterie courant', 'Batterie voltage')
+%     xlabel('Time')
+%    ylabel('Courant', 'Tension')    
+%    mecPower = data.DRIVE_L_VEHICLE_VELOCITY_ID .* 
         
     
     end
