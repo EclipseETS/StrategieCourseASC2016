@@ -8,7 +8,7 @@ end
 %% Éclipse 9
 %  Modèle du battery pack
 %   
-%  Ce script peut être utilisé de deux façcons. D'abord, il peut être utilisé 
+%  Ce script peut être utilisé de deux façons. D'abord, il peut être utilisé 
 %  sans arguments afin de générer le fichier 'Eclipse9_cells_discharge.mat'
 %  Ce fichier contient la structure cellModel qui contient les coefficients
 %  des différents polynômes représentant chacun une des courbes de

@@ -1,36 +1,36 @@
-%% �clipse 9
+%% Eclipse 9
 %  Le script course_sur_circuit.m permet de simuler la performance d'une
-%  voiture solaire sur un parcours sur circuit. L'objectif est de conna�tre
-%  le nombre de tours que le v�hicule peut r�aliser en respectant la
-%  capacit� de la batterie.mn
+%  voiture solaire sur un parcours sur circuit. L'objectif est de connaitre
+%  le nombre de tours que le vehicule peut realiser en respectant la
+%  capacite de la batterie.mn
 %
 %  Auteur : Julien Longchamp
-%  Date de cr�ation : 17-06-2016
-%  Derni�res modifications : 13-01-2017 (JL) R�daction du guide de l'utilisateur
+%  Date de creation : 17-06-2016
+%  Dernieres modifications : 13-01-2017 (JL) Redaction du guide de l'utilisateur
 %                            07-07-2016 (JL)
 %%
 
-clc, clear all, close all
+clear all, %close all clc
 
-%% Ajoute les r�pertoires n�cessaires au chemin de recherchclce du projet
+%% Ajoute les repertoires necessaires au chemin de recherche du projet
 addpath('Data');
 addpath('Models');
 addpath('Outils');
 
-%% Importation des donn�es du circuit � r�aliser (Voir "traitementDonneesGPS.m")
+%% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
 %load('TrackPMGInner10m.mat')
 load('Data/TrackPMGInner10m.mat') % Octave
 %load('PittRaceNorthTrack10m.mat')
 parcours = newParcours;
 
-%% Charge tous les param�tres de la simulation
+%% Charge tous les parametres de la simulation
 run('Models/parameterGeneratorEclipseIX.m');
 
 
 %% Simulation des tours de piste
 nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
-outOfFuel = 0; % Flag qui tombe � 1 lorsque la batterie est � plat
+outOfFuel = 0; % Flag qui tombe a 1 lorsque la batterie est a plat
 journee = 3;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.nbLap = etat_course.nbLap+1;
@@ -40,15 +40,15 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
     
     if journee < 3 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
-        disp('Fin de la journ�e')
+        disp('Fin de la journee')
         journee = journee + 1;
-        etat_course.heure_depart = datenum([2016,07,26,10,0,0]);
+%       etat_course.heure_depart = datenum([2017,06,17,reglement.heure_depart*24,0,0]);
         etat_course.vitesse_ini = 0;
         
         [SoC_out_soir] = rechargeSimulator(parcours.latitude(1), lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel);
         [SoC_out_matin] = rechargeSimulator(parcours.latitude(1), reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel);
         etat_course.SoC_start = SoC_out_matin;     
-        disp(['SoC recharg� � : ' num2str(SoC_out_matin*100) '%'])
+        disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
     else
         etat_course.heure_depart = lapLog(etat_course.nbLap).heure_finale;
         outOfFuel = lapLog(etat_course.nbLap).outOfFuel;
@@ -70,37 +70,37 @@ vitesse_moyenne_totale = mean(vitesse_moyenne);
 puissance_moyenne_totale = mean(puissance_moyenne);
 puissancePV_moyenne_totale = mean(puissancePV_moyenne);
 
-fprintf('\nLa voiture s''est arr�t�e apr�s %3d tours \n', etat_course.nbLap);
+fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
 fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*parcours.distance(end));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
 
-h1 = figure;
-hold on, grid on, title('�volution de la puissance')
-h2 = figure;
-hold on, grid on, title('�volution de l''''�tat de charge')
-for k = 1:length(lapLog)
-    figure(h1)
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissancePV, 'dr')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs, '.k')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*1000, '--m')
-    
-    figure(h2)
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*100, '--m')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse*3.6, 'g')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_accel*36, 'r')
-    plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).elevation, '.b')
-end
-
-figure(h1)
-xlabel('distance (km)')
-ylabel('puissance (W)')
-legend('ELE', 'PV', 'MEC', 'SoC');
-figure(h2)
-xlabel('distance (km)')
-legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
+% h1 = figure;
+% hold on, grid on, title('Evolution de la puissance')
+% h2 = figure;
+% hold on, grid on, title('Evolution de l''''etat de charge')
+% for k = 1:length(lapLog)
+%     figure(h1)
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissancePV, 'dr')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs, '.k')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*1000, '--m')
+%     
+%     figure(h2)
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*100, '--m')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse*3.6, 'g')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_accel*36, 'r')
+%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).elevation, '.b')
+% end
+% 
+% figure(h1)
+% xlabel('distance (km)')
+% ylabel('puissance (W)')
+% legend('ELE', 'PV', 'MEC', 'SoC');
+% figure(h2)
+% xlabel('distance (km)')
+% legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
 
 % A = parcours.latitude;
 % B = parcours.longitude;
