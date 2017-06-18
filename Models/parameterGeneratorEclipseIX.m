@@ -41,7 +41,7 @@ load('../Data/SoleilFSGPcoef.mat'); % Octave
 
 %% Contraintes du parcour
 strategy.vitesse_min = 20/3.6;   % m/s (20 km/h)
-strategy.vitesse_moy = 100/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_moy = 40/3.6;   % m/s  *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.5;  % m/s (120 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
@@ -98,7 +98,7 @@ eclipse9.puissance_max = 1800; % W     (Pour un moteur)
 % ex. meteo.temperature = [20 28] -> 20deg 7hjusqu'a midi et 28deg midi jusqu'a 20h
 meteo.vitesse_vent = [0 0]; % km/h
 meteo.direction_vent = [0 0]; % degres 
-meteo.couverture_ciel = [3/6 3/6]; % Pourcentage du ciel degage (Multiplie la puissance calculee des panneaux)
+meteo.couverture_ciel = [5.5/6 5.5/6]; % Pourcentage du ciel degage (Multiplie la puissance calculee des panneaux)
 meteo.pression_atmospherique = [101.2 101.2]; % kPa
 meteo.temperature = [24 24]; % Degre celcius
 meteo.mv_air = 1000*meteo.pression_atmospherique*constantes.masse_molaire_air ./ (constantes.constante_universelle_gaz_parfaits * (constantes.zero_absolu + meteo.temperature)); % kg/m^3
