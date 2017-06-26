@@ -56,6 +56,7 @@ Ibatt = zeros(nbPoints,1);
 puissancePV = zeros(nbPoints,1);
 direction = zeros(nbPoints, 1);
 
+
 % h = waitbar(0, 'Lap en cours');
 for k=2:nbPoints
 %     waitbar(k / nbPoints)
@@ -104,13 +105,29 @@ for k=2:nbPoints
     end
     profil_vitesse(k) = profil_vitesse(k-1)+profil_accel(k).*temps_interval(k);
     temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k); % s
-    
-    heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
+    heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);
+%     heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
 
-    densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
-    [puissancePV_sansNuages Elevation(k)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
-    puissancePV(k) = meteo.couverture_ciel(index_meteo) .* puissancePV_sansNuages;
-%     puissancePV(k) = meteo.couverture_ciel(index_meteo) .* solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
+%    densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
+% 	[puissancePV_sansNuages Elevation(k)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
+% 	puissancePV(k) = meteo.couverture_ciel(index_meteo) .* puissancePV_sansNuages;
+%%  
+    warning ('off')
+    heureArrondieVec = datevec(heure);
+    heureArrondie = ceil(heureArrondieVec(4)/.5)*.5 ; % Heure arrondie aux 30 minutes
+    heureArrondieVec = [floor(heureArrondie)  (mod(heureArrondie, 1))*60 0];
+    
+%     heureArrondieVec = [hour(heureArrondie) (mod(heureArrondie, 1))*60 0];
+    lapDateVec = datevec(etat_course.heure_depart, 'yyyy-mm-dd HH:MM:SS');
+    lapTimeVec = datevec(datenum([lapDateVec(1:3) heureArrondieVec]), 'yyyy-mm-dd HH:SS:MM');
+    
+    indexPV = find(ismember (meteo.timeVec_irradiance, lapTimeVec, 'rows'));
+    
+    irrandiance = meteo.horizontal_irradiance(1 , indexPV);
+    puissancePV(k) = irrandiance * eclipse9.SurfaceTotalePV * eclipse9.EfficaciteSunPowerBinH;
+    warning ('on')
+%%    
+    %puissancePV(k) = meteo.couverture_ciel(index_meteo) .* solarArrayModel(parcours.latitude(k), parcours.longitude(k), parcours.altitude(k), parcours.slope(k), heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
     %energie_recuperee(k) = puissancePV(k) .* temps_interval(k); % J
     
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
@@ -126,7 +143,7 @@ for k=2:nbPoints
     
     puissance_moteurs(k) = profil_force_moteurs(k).*parcours.distance_interval(k)./temps_interval(k); % W
     puissance_elec_traction(k) = puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses; % W
-    puissance_elec_totale(k) = (puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses - puissancePV(k)) ; % W
+    puissance_elec_totale(k) = (puissance_moteurs(k) + motorsLosses + drivesLosses + batteryLosses - puissancePV(k) ); % W
     energie_mec_moteur(k) = sum(profil_force_moteurs(1:k).*parcours.distance_interval(1:k))/3.6e6; % kWh
     energie_depensee_totale(k) = puissance_elec_totale(k).* temps_interval(k) / 3600; % Wh
         
@@ -180,6 +197,6 @@ lapLog.heure_finale = heure; % datenum
 lapLog.puissance_elec_totale = puissance_elec_totale; % W
 lapLog.puissancePV = puissancePV; % W
 lapLog.puissance_elec_traction = puissance_elec_traction; % W
-lapLog.elevation = Elevation; % degrés
+%lapLog.elevation = Elevation; % degrés
 end
 

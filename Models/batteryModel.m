@@ -32,7 +32,7 @@ nb_cell_total = nb_cell_serie*nb_cell_para;
 
 Ecell_max = 4.2;    % V
 Ecell_min = 2.6;    % V
-Ccell = 3.35;       % Ah
+Ccell = 2.942;       % Ah
 Crate_max = 2;
 Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 
