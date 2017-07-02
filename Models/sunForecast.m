@@ -29,19 +29,16 @@ Latitude = '30.134';
 Longitude = '-97.635';
 url = ['https://api.solcast.com.au/radiation/forecasts?longitude=' Longitude '&latitude=' Latitude '&format=json&api_key=DowFFmYJnUK_IEhY6Az6nkcer_os0HR2'];
 try  
-%     api = 'https://api.solcast.com.au/radiation/forecasts?longitude=-97.635&latitude=30.134&format=json&api_key=DowFFmYJnUK_IEhY6Az6nkcer_os0HR2';
+%   api = 'https://api.solcast.com.au/radiation/forecasts?longitude=-97.635&latitude=30.134&format=json&api_key=DowFFmYJnUK_IEhY6Az6nkcer_os0HR2';
     donnees_solaire = webread (url);
-catch e
-    disp(e)
-    disp('ALERTE : Les prévisions solaires n''ont pas été mises à jour')
-end
-
+    
     forecasts = struct2cell(donnees_solaire.forecasts);
     global_horizontal_irradiance = cell2mat(forecasts(1,:));
     direct_normal_irradiance = cell2mat(forecasts(4,:));
     diffuse_horizontal_irradiance = cell2mat(forecasts(7,:));
-    
+
     date = zeros(length(forecasts), 6);
+    
     for k = 1:length(forecasts)
         startingTime = strsplit(strjoin(forecasts(13,k)), 'T');
         startingHour = char(startingTime(end));
@@ -51,16 +48,23 @@ end
         date(k,:) = datevec(startingTime, 'yyyy-mm-dd HH:MM:SS');
     end
     
-    
-%     date(:,4) = date(:,4) - 5;
-    
-    solarForecast.global_horizontal_irradiance = global_horizontal_irradiance;
+
     solarForecast.direct_normal_irradiance = direct_normal_irradiance;
     solarForecast.diffuse_horizontal_irradiance = diffuse_horizontal_irradiance;
     solarForecast.global_direct_irradiance = direct_normal_irradiance+diffuse_horizontal_irradiance;
+    solarForecast.global_horizontal_irradiance = global_horizontal_irradiance;
     solarForecast.date = date;
     
     filename = ['../Data/SunForecastFSGP2017' datestr(now, '-mmm-dd') '.mat'];  
     save(filename, 'solarForecast');
     disp('Les prévisions solaires ont été mises à jour')
+
+
+    
+catch e
+    disp(e)
+    disp('ALERTE : Les prévisions solaires n''ont pas été mises à jour')
+%   load('Data/SunForecastFSGP2017-Jun-29.mat')
+end
+
 

@@ -29,6 +29,27 @@ energie_recuperee = 0; % J
 avecSupport = 1;
 index_meteo = 1;
 for r = 1:length(temps_recharge)
+%%   
+%     warning ('off')
+%     
+% %     heureArrondieVec = [hour(heureArrondie) (mod(heureArrondie, 1))*60 0];
+%     lapDateVec = datevec(etat_course.heure_depart, 'yyyy-mm-dd HH:MM:SS');
+%     lapTimeVec = datevec(datenum([lapDateVec(1:3) heureArrondieVec]), 'yyyy-mm-dd HH:SS:MM');
+%     
+%     indexPV = find(ismember (meteo.timeVec_irradiance, lapTimeVec, 'rows'));
+%     
+%     irrandiance = meteo.horizontal_irradiance(1 , indexPV);
+%     puissancePV(k) = irrandiance * eclipse9.SurfaceTotalePV * eclipse9.EfficaciteSunPowerBinH;
+%     warning ('on')
+%  %%   
+    
+    
+    
+    
+    
+    
+    
+    
     %             densite_de_puissance_incidente2 = polyval(constantes.irrandiance_coef, mod(temps_recharge_soir(r),1)*24); % Calcul de la densite de puissance incidente
     densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*latitude,1,0.2,temps_recharge(r)); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
     [puissancePV(r) Elevation(r)] = solarArrayModel(temps_recharge(r), densite_de_puissance_incidente, avecSupport, meteo.sun_cycle_coef);

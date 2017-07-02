@@ -82,8 +82,16 @@ fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
 fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
 
-    
-    
+%% Graphique des prévisions solaire
+
+grid on, title('Graphique des prévisions solaire')
+xlabel('Heure')
+ylabel('Puissance du soleil (W/m^2')
+legend('GHI', 'DNI');
+
+   for k = 1:length(forecasts)
+
+
 % h1 = figure;
 % hold on, grid on, title('Evolution de la puissance')
 % h2 = figure;

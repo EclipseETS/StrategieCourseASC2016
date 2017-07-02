@@ -124,7 +124,7 @@ for k=2:nbPoints
     indexPV = find(ismember (meteo.dateVec_irradiance, lapTimeVec, 'rows'));
     
     if isempty (indexPV) == 1
-        error ('etat_course.heure_depart est invalide, la date ne corresponds pas avec le fichier sunForecast, a changer dans parameterGeneratorEclipseIX.')
+        error ('L''etat_course.heure_depart est \n a changer dans parameterGeneratorEclipseIX.')
     end
     
     irrandiance = meteo.global_horizontal_irradiance(1 , indexPV);

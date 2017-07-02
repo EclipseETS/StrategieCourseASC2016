@@ -40,7 +40,7 @@ load('../Data/SoleilFSGPcoef.mat'); % Octave
 
 %% Prévisions solaires
 run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
-load('../Data/SunForecastFSGP2017-Jun-26.mat'); % Charge les meilleures prévisions solaires disponibles
+load('../Data/SunForecastFSGP2017-Jul-02.mat'); % Charge les meilleures prévisions solaires disponibles
 
 %% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
@@ -80,10 +80,9 @@ meteo.pression_atmospherique = [101.2 101.2]; % kPa
 meteo.temperature = [28 28]; % Degre celcius
 meteo.mv_air = 1000*meteo.pression_atmospherique*constantes.masse_molaire_air ./ (constantes.constante_universelle_gaz_parfaits * (constantes.zero_absolu + meteo.temperature)); % kg/m^3
 meteo.sun_cycle_coef = sun_coef;
-meteo.horizontal_irradiance = solarForecast.global_horizontal_irradiance;
+meteo.global_horizontal_irradiance = solarForecast.global_horizontal_irradiance;
 meteo.direct_irrandiance = solarForecast.global_direct_irradiance;
-meteo.timeVec_irradiance = solarForecast.date;
-
+meteo.dateVec_irradiance = solarForecast.date;
 
 %% CONSTANTES OBSOLETES
 % constantes.tempAmbiant = 273.15+20;  % Temperature ambiante (Kelvin)
@@ -123,5 +122,6 @@ eclipse9.EfficaciteSunPowerBinH = 0.233; % (%)
 etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
 etat_course.vitesse_ini = 0; % m/s
-etat_course.heure_depart = datenum([2017,06,27,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
+etat_course.heure_depart = datenum([2017,07,03,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
 
+ 
