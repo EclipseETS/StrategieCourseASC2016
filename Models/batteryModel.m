@@ -142,7 +142,7 @@ if nargin == 0
     decharge0C2 = p1;
     decharge1C = p2;
     decharge2C = p3;
-    save('.\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
+    save('..\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
 end
 
 %% Section spéciale pour le calcul de l'élévation de la température dans le battery pack d'Éclipse 9
