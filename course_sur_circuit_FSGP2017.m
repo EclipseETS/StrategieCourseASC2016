@@ -11,7 +11,7 @@
 %                            04-07-2017 Mégane Lavallee
 %%
 
-clear all%, close all, clc
+clear all, close all, clc
 
 %% Ajoute les repertoires necessaires au chemin de recherche du projet
 addpath('Data');
@@ -21,7 +21,7 @@ addpath('Outils');
 %% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
 %load('TrackPMGInner10m.mat')
-load('Data/FSGP2017_CircuitOfTheAmericas10m.mat') % Octave
+load('Data/FSGP2017_CircuitOfTheAmericas10mLimited.mat') % Octave
 %load('PittRaceNorthTrack10m.mat')
 parcours = newParcours;
 
@@ -37,7 +37,7 @@ journee = 1;
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     
     etat_course.nbLap = etat_course.nbLap+1;
-    lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
+    lapLog(etat_course.nbLap) = lapSimulatorLimited(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
     
     etat_course.SoC_start = lapLog(etat_course.nbLap).SoC(end);
     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
@@ -123,4 +123,29 @@ fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
 % E = lapLog(1).temps_cumulatif;
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
 
+zA_start = 201; % Virages 9-10-11
+zA_stop = 266;
+zB_start = 347; % Virages 11D - 12
+zB_stop = 390;
+zC_start = 477; % Virages 17-18-19
+zC_stop = 543;
 
+figure, hold on, title('Carte 3D du profil de vitesse'), grid on
+plot3(parcours.longitude, parcours.latitude, lapLog(1).profil_vitesse * 3.6, '.')
+plot3(parcours.longitude, parcours.latitude, min(parcours.speedLimit, lapLog(1).profil_vitesse * 3.6), '*')
+% plot3(parcours.longitude(zA_start:zA_stop), parcours.latitude(zA_start:zA_stop), 20*ones(size(parcours.latitude(zA_start:zA_stop))), '*r') 
+% plot3(parcours.longitude(zB_start:zB_stop), parcours.latitude(zB_start:zB_stop), 30*ones(size(parcours.latitude(zB_start:zB_stop))), '*m') 
+% plot3(parcours.longitude(zC_start:zC_stop), parcours.latitude(zC_start:zC_stop), 30*ones(size(parcours.latitude(zC_start:zC_stop))), '*m') 
+legend('Profil de vitesse', 'location', 'southeast')
+xlabel('Longitude')
+ylabel('Latitude')
+zlabel('Altitude (m)')
+
+figure, hold on, title('Carte 2D du parcours avec limites de vitesse')
+plot(parcours.longitude, parcours.latitude, 'og')
+plot(parcours.longitude(zA_start:zA_stop), parcours.latitude(zA_start:zA_stop), '*r') 
+plot(parcours.longitude(zB_start:zB_stop), parcours.latitude(zB_start:zB_stop), '*m') 
+plot(parcours.longitude(zC_start:zC_stop), parcours.latitude(zC_start:zC_stop), '*m') 
+legend('Stratégie', '20 km/h', '30 km/h', '30 km/h', 'location', 'southeast')
+xlabel('Longitude')
+ylabel('Latitude')

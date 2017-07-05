@@ -52,9 +52,9 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 %% Contraintes du parcour
 strategy.SoC_ini = 1;         % State of Charge actuel(%)
 strategy.SoC_min = 0.15;         % Final State of Charge (%)
-strategy.vitesse_min = 20/3.6;   % m/s (20 km/h)
+strategy.vitesse_min = 15/3.6;   % m/s (20 km/h)
 strategy.vitesse_moy = 66/3.6;   % m/s  *** VITESSE CIBLE ***
-strategy.vitesse_max = 120/3.5;  % m/s (120 km/h)
+strategy.vitesse_max = 120/3.6;  % m/s (120 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
 strategy.accel_max = 1;          % m/s^2
