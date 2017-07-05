@@ -21,6 +21,7 @@ function lapLog = lapSimulator(parcours, etat_course, cellModel, strategy, eclip
 %  Auteur : Julien Longchamp
 %  Date de création : 17-06-2016
 %  Dernière modification : 17-01-2017 (JL) Changement de nom de variable : contraintes -> strategy
+%                          04-07-2017 Mégane Lavallee
 %%
 
 %distance_totale = parcours.distance(end);   % km
@@ -105,8 +106,7 @@ for k=2:nbPoints
     end
     profil_vitesse(k) = profil_vitesse(k-1)+profil_accel(k).*temps_interval(k);
     temps_cumulatif(k) = temps_cumulatif(k-1) + temps_interval(k); % s
-    heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);
-%     heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
+    heure = etat_course.heure_depart + temps_cumulatif(k)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
 
 %    densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(k),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
 % 	[puissancePV_sansNuages Elevation(k)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);

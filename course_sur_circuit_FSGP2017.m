@@ -8,9 +8,10 @@
 %  Date de creation : 17-06-2016
 %  Dernieres modifications : 13-01-2017 (JL) Redaction du guide de l'utilisateur
 %                            07-07-2016 (JL)
+%                            04-07-2017 Mégane Lavallee
 %%
 
-clear all, close all, clc
+clear all%, close all, clc
 
 %% Ajoute les repertoires necessaires au chemin de recherche du projet
 addpath('Data');
@@ -42,13 +43,18 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
 
     if journee < 3 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
-        disp('Fin de la journee')
+%         disp('Fin de la journee')
         journee = journee + 1;
+        fprintf('La journée s''est finie a %.0fh%.0f \n', mod(lapLog(etat_course.nbLap).heure_finale, 1)*24, mod(mod(lapLog(etat_course.nbLap).heure_finale, 1)*24,1)*60);
+%         [SoC_out_soir] = rechargeSimulator(etat_course, mod(lapLog(etat_course.nbLap).heure_finale, 1), reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+        [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+        [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
+       
         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
         etat_course.vitesse_ini = 0;
         
-        [SoC_out_soir] = rechargeSimulator(parcours.latitude(1), lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel);
-        [SoC_out_matin] = rechargeSimulator(parcours.latitude(1), reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel);
+%         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
         etat_course.SoC_start = SoC_out_matin;     
         disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
     else

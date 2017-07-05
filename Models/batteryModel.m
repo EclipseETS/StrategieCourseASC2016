@@ -8,7 +8,7 @@ end
 %% Éclipse 9
 %  Modèle du battery pack
 %   
-%  Ce script peut être utilisé de deux façons. D'abord, il peut être utilisé 
+%  Ce script peut être utilisé de deux façcons. D'abord, il peut être utilisé 
 %  sans arguments afin de générer le fichier 'Eclipse9_cells_discharge.mat'
 %  Ce fichier contient la structure cellModel qui contient les coefficients
 %  des différents polynômes représentant chacun une des courbes de
@@ -32,7 +32,7 @@ nb_cell_total = nb_cell_serie*nb_cell_para;
 
 Ecell_max = 4.2;    % V
 Ecell_min = 2.6;    % V
-Ccell = 2.942;       % Ah
+Ccell = 3.35;       % Ah
 Crate_max = 2;
 Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 
@@ -121,14 +121,15 @@ continous_discharge_2C = polyval(p3, continous_capacity);
 
 if nargin == 0
 figure, hold on
-plot(discharge_0p2C(:,1), discharge_0p2C(:,2), 'sr')
 plot(continous_capacity,continous_discharge_0p2C, 'r')
-plot(discharge_1C(:,1), discharge_1C(:,2), 'sb')
 plot(continous_capacity,continous_discharge_1C, 'b')
-plot(discharge_2C(:,1), discharge_2C(:,2), 'sg')
 plot(continous_capacity,continous_discharge_2C, 'g')
+plot(discharge_0p2C(:,1), discharge_0p2C(:,2), 'sr')
+plot(discharge_1C(:,1), discharge_1C(:,2), 'sb')
+plot(discharge_2C(:,1), discharge_2C(:,2), 'sg')
 xlabel('Capacité (AH)')
 ylabel('Tension (V)')
+legend('0.2C', '1C', '2C')
 end
 
 
@@ -137,7 +138,7 @@ if nargin == 0
     decharge0C2 = p1;
     decharge1C = p2;
     decharge2C = p3;
-    save('..\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
+    save('.\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
 end
 
 %% Section spéciale pour le calcul de l'élévation de la température dans le battery pack d'Éclipse 9

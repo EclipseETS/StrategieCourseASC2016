@@ -47,7 +47,7 @@ for r = 1:length(temps_recharge)
     indexPV = find(ismember (meteo.dateVec_irradiance, lapTimeVec, 'rows'));
     
     if isempty (indexPV) == 1
-        error ('IndexPV ne doit pas etre egal a zero')
+        error ('etat_course.heure_depart est invalide, la date ne corresponds pas avec le fichier sunForecast, a changer dans parameterGeneratorEclipseIX.')
     end
     
     irrandiance = meteo.direct_irradiance(1 , indexPV);
@@ -61,7 +61,7 @@ for r = 1:length(temps_recharge)
 
 %     puissancePV_reel(r) = -meteo.couverture_ciel(index_meteo) * puissancePV(r); % W
 %     energie(r) = puissancePV(r) * delta_t; % Joules
-    energie_recuperee = energie_recuperee + puissancePV(r) * delta_t ; % Joules (1 W*s = 1 J)   
+    energie_recuperee = energie_recuperee + puissancePV(r) * 3600; % Joules (1 W*s = 1 J)   
 end
 energie_recuperee_wh = energie_recuperee/3600; % Wh Énergie récupérée totale durant l'arrêt
 disp (energie_recuperee_wh/1000)
