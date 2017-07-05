@@ -21,7 +21,7 @@ addpath('Outils');
 %% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
 %load('TrackPMGInner10m.mat')
-load('Data/FSGP2017_CircuitOfTheAmericas10m.mat'); % Octave
+load('Data/FSGP2017_CircuitOfTheAmericas10mLimited.mat'); % Octave
 %load('PittRaceNorthTrack10m.mat')
 parcours = newParcours;
 
@@ -42,7 +42,7 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
 %     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
 
         etat_course.nbLap = etat_course.nbLap+1;
-        lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
+        lapLog(etat_course.nbLap) = lapSimulatorLimited(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
 
         etat_course.SoC_start = lapLog(etat_course.nbLap).SoC(end);
         etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
@@ -140,3 +140,11 @@ fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
 % D = lapLog(1).energie_fournie_totale ./ lapLog(1).Vbatt;
 % E = lapLog(1).temps_cumulatif;
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
+
+zA_start = 201; % Virages 9-10-11
+zA_stop = 266;
+zB_start = 347; % Virages 11D - 12
+zB_stop = 390;
+zC_start = 477; % Virages 17-18-19
+zC_stop = 543;
+

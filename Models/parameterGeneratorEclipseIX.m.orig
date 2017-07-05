@@ -40,7 +40,7 @@ load('../Data/SoleilFSGPcoef.mat'); % Octave
 
 %% Prévisions solaires
 run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
-load('../Data/SunForecastFSGP2017-Jul-04.mat'); % Charge les meilleures prévisions solaires disponibles
+load('../Data/SunForecastFSGP2017-Jul-05.mat'); % Charge les meilleures prévisions solaires disponibles
 
 %% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
@@ -52,9 +52,15 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 %% Contraintes du parcour
 strategy.SoC_ini = 1;         % State of Charge actuel(%)
 strategy.SoC_min = 0.15;         % Final State of Charge (%)
+<<<<<<< HEAD
+strategy.vitesse_min = 20/3.6;   % m/s (20 km/h)
+strategy.vitesse_moy = 65/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_max = 120/3.5;  % m/s (120 km/h)
+=======
 strategy.vitesse_min = 15/3.6;   % m/s (20 km/h)
-strategy.vitesse_moy = 67/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_moy = 66/3.6;   % m/s  *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.6;  % m/s (120 km/h)
+>>>>>>> bc8a0ec697c977f64d902c39ddd241aac21b8158
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
 strategy.accel_max = 1;          % m/s^2
