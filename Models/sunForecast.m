@@ -59,8 +59,8 @@ end
     solarForecast.diffuse_horizontal_irradiance = diffuse_horizontal_irradiance;
     solarForecast.global_direct_irradiance = direct_normal_irradiance+diffuse_horizontal_irradiance;
     solarForecast.date = date;
-    
-    filename = ['../Data/SunForecastFSGP2017' datestr(now, '-mmm-dd') '.mat'];  
+
+    filename = ['../Data/SunForecastFSGP2017' datestr(now, '-mmm-dd') '.mat']  
     save(filename, 'solarForecast');
     disp('Les prévisions solaires ont été mises à jour')
 

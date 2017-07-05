@@ -40,7 +40,7 @@ load('../Data/SoleilFSGPcoef.mat'); % Octave
 
 %% Prévisions solaires
 run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
-load('../Data/SunForecastFSGP2017-Jun-26.mat'); % Charge les meilleures prévisions solaires disponibles
+load('../Data/SunForecastFSGP2017-Jul-04.mat'); % Charge les meilleures prévisions solaires disponibles
 
 %% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
@@ -123,5 +123,5 @@ eclipse9.EfficaciteSunPowerBinH = 0.233; % (%)
 etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
 etat_course.vitesse_ini = 0; % m/s
-etat_course.heure_depart = datenum([2017,06,27,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
+etat_course.heure_depart = datenum([2017,07,06,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
 

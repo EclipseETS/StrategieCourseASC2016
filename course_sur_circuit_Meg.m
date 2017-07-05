@@ -28,11 +28,13 @@ parcours = newParcours;
 run('Models/parameterGeneratorEclipseIX.m');
 
 
+
 %% Simulation des tours de piste
 % strategy.vitesse_moy = 0; % on commence a 0 pour incrementer jusqua la bonne valeur
 nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe a 1 lorsque la batterie est a plat
 journee = 1;
+disp(['Départ : ' datestr(etat_course.heure_depart)]);
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     
     etat_course.nbLap = etat_course.nbLap+1;
@@ -100,13 +102,13 @@ fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
 %     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).elevation, '.b')
 % end
 % 
-figure(h1)
-xlabel('distance (km)')
-ylabel('puissance (W)')
-legend('ELE', 'PV', 'MEC', 'SoC');
-figure(h2)
-xlabel('distance (km)')
-legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
+% figure(h1)
+% xlabel('distance (km)')
+% ylabel('puissance (W)')
+% legend('ELE', 'PV', 'MEC', 'SoC');
+% figure(h2)
+% xlabel('distance (km)')
+% legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
 
 % A = parcours.latitude;
 % B = parcours.longitude;
