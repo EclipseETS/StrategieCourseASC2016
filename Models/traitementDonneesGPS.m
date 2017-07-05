@@ -56,12 +56,12 @@ clc, clear all, close all
 
 % CoTA (FSGP 2017)
 fichier_source = 'C:\Users\ClubEclipse\Downloads\CircuitOfTheAmericas.csv';
-fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\CircuitOfTheAmericas10m.mat'
+fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\CircuitOfTheAmericas20m.mat'
 
 % ***************************** IMPORTANT ****************************************
 % Ajuster la distance maximale entre chaque point si nécessaire (Standard : 100 m)
 % ********************************************************************************
-interval_max = 10; % mètres      Distance maximale entre deux points
+interval_max = 20; % mètres      Distance maximale entre deux points
 
 
 % Charge un fichier source .csv dont le format est [Type Latitude Longitude Altitude(m) Distance(km) Interval(m)]

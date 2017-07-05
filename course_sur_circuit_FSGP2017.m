@@ -31,7 +31,7 @@ run('Models/parameterGeneratorEclipseIX.m');
 
 %% Simulation des tours de piste
 % strategy.vitesse_moy = 0; % on commence a 0 pour incrementer jusqua la bonne valeur
-nbLapMax = 1000; %ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
+nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe a 1 lorsque la batterie est a plat
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
 %     
@@ -55,6 +55,8 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
         etat_course.vitesse_ini = 0;
         
+%         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
         etat_course.SoC_start = SoC_out_matin;     
         disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
         
@@ -76,13 +78,15 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     else 
         etat_course.heure_depart = lapLog(etat_course.nbLap).heure_finale;
         outOfFuel = lapLog(etat_course.nbLap).outOfFuel;
-    
     end
-     
+ 
     if mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel
         outOfFuel = 1;
         disp(datestr(lapLog(etat_course.nbLap).heure_finale));
+%         endOfDay = datestr(lapLog(etat_course.nbLap).heure_finale);
+%         disp(endOfDay);
     end
+    
 end
 
 for k = 1:length(lapLog)
@@ -137,4 +141,10 @@ fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
 % E = lapLog(1).temps_cumulatif;
 % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
 
+zA_start = 201; % Virages 9-10-11
+zA_stop = 266;
+zB_start = 347; % Virages 11D - 12
+zB_stop = 390;
+zC_start = 477; % Virages 17-18-19
+zC_stop = 543;
 
