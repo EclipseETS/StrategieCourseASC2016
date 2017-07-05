@@ -32,7 +32,7 @@ nb_cell_total = nb_cell_serie*nb_cell_para;
 
 Ecell_max = 4.2;    % V
 Ecell_min = 2.6;    % V
-Ccell = 3.35;       % Ah
+Ccell = 2.9599;      % Ah
 Crate_max = 2;
 Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 
@@ -45,6 +45,7 @@ Rint = nb_cell_serie/nb_cell_para*Rcell;    % ohm
 
 
 % Points provenant de la courbe de décharge caractéristique
+correctionFactor = Ccell/3.35;
 discharge_0p2C = [0 4.2;
                 .10 4.1;
                 .50 4.0;
@@ -54,7 +55,8 @@ discharge_0p2C = [0 4.2;
                2.50 3.45;
                3.00 3.3;
                3.35 2.5;];
-           
+discharge_0p2C(:,1) = discharge_0p2C(:,1) * correctionFactor;
+
 discharge_1C =   [0 4.0;
                 .10 3.9;
                 .50 3.8;
@@ -64,7 +66,8 @@ discharge_1C =   [0 4.0;
                2.50 3.3;
                3.00 3.1;
                3.35 2.5;];
-           
+discharge_1C(:,1) = discharge_1C(:,1) * correctionFactor;
+
 discharge_2C =   [0 3.75;
                 .10 3.7;
                 .50 3.6;
@@ -74,8 +77,9 @@ discharge_2C =   [0 3.75;
                2.50 3.1;
                3.00 2.8;
                3.35 2.5;];
+discharge_2C(:,1) = discharge_2C(:,1) * correctionFactor;
            
-continous_capacity = linspace(0,3.35,1000);
+continous_capacity = linspace(0,Ccell,1000);
 p1 = polyfit(discharge_0p2C(:,1), discharge_0p2C(:,2), 7);
 p2 = polyfit(discharge_1C(:,1), discharge_1C(:,2), 7);
 p3 = polyfit(discharge_2C(:,1), discharge_2C(:,2), 7);
