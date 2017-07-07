@@ -64,13 +64,15 @@ for r = 1:length(temps_recharge)
     energie_recuperee = energie_recuperee + puissancePV(r) * delta_t ; % Joules (1 W*s = 1 J)   
 end
 energie_recuperee_wh = energie_recuperee/3600; % Wh Énergie récupérée totale durant l'arrêt
-% disp (energie_recuperee_wh/1000)
 SoC_Ah = eclipse9.Ccell * (1-SoC_in);    % Ah      
 Ebatt = 38 * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
 new_SoC_Ah = SoC_Ah - (energie_recuperee_wh/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
 new_SoC_Ah = max([new_SoC_Ah, 0]);
 new_SoC_Ah = min([new_SoC_Ah, eclipse9.Ccell]);
 SoC_out = (eclipse9.Ccell - new_SoC_Ah) / eclipse9.Ccell;
+
+fprintf ('Energie récupéré durant la recharge : %.2f kWh \n', energie_recuperee_wh/1000)
+fprintf ('State of Charge après la recharge : %.2f pourcent \n',SoC_out*100)
 
 end
 

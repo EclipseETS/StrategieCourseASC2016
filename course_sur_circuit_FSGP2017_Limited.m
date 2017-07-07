@@ -89,6 +89,8 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
     
 end
 
+SoC_final = lapLog(etat_course.nbLap).SoC(end) * 100; % (%)
+
 for k = 1:length(lapLog)
     vitesse_moyenne(k) = mean(lapLog(k).profil_vitesse);
     puissance_moyenne(k) = mean(lapLog(k).puissance_elec_traction);
@@ -100,11 +102,12 @@ puissancePV_moyenne_totale = mean(puissancePV_moyenne);
 puissance_net_moy = puissancePV_moyenne_totale-puissance_moyenne_totale;
 
 fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
+fprintf('State of charge final %.2f pourcent \n', SoC_final);
 fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*parcours.distance(end));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
-fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
+fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance_net_moy);
 
     
     

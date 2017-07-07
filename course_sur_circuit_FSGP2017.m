@@ -31,7 +31,7 @@ run('Models/parameterGeneratorEclipseIX.m');
 
 %% Simulation des tours de piste
 % strategy.vitesse_moy = 0; % on commence a 0 pour incrementer jusqua la bonne valeur
-nbLapMax = 200;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
+nbLapMax = 100;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe a 1 lorsque la batterie est a plat
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
 %     
@@ -50,15 +50,16 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
 
     if etat_course.journee < 3 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
         [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+        etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
        
-        etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
+%         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
         etat_course.vitesse_ini = 0;
         
 %         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
 %         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
         etat_course.SoC_start = SoC_out_matin;     
-        disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
+%         disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
         
 %     elseif journee == 2 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
 %         journee = journee + 1;
@@ -82,12 +83,14 @@ while outOfFuel == 0 && etat_course.nbLap < nbLapMax
  
     if mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel
         outOfFuel = 1;
-        disp(datestr(lapLog(etat_course.nbLap).heure_finale));
+%         disp(datestr(lapLog(etat_course.nbLap).heure_finale));
 %         endOfDay = datestr(lapLog(etat_course.nbLap).heure_finale);
 %         disp(endOfDay);
     end
     
 end
+
+SoC_final = lapLog(etat_course.nbLap).SoC(end) * 100; % (%)
 
 for k = 1:length(lapLog)
     vitesse_moyenne(k) = mean(lapLog(k).profil_vitesse);
@@ -99,12 +102,15 @@ puissance_moyenne_totale = mean(puissance_moyenne);
 puissancePV_moyenne_totale = mean(puissancePV_moyenne);
 puissance_net_moy = puissancePV_moyenne_totale-puissance_moyenne_totale;
 
+disp(datestr(lapLog(etat_course.nbLap).heure_finale));
+
 fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
+fprintf('State of charge final %.2f pourcent \n', SoC_final);
 fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*parcours.distance(end));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
-fprintf('Puissance net moyenne %3.2f W \n', puissance_net_moy);
+fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance_net_moy);
 
     
     

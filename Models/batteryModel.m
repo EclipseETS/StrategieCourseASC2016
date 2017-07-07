@@ -142,7 +142,7 @@ if nargin == 0
     decharge0C2 = p1;
     decharge1C = p2;
     decharge2C = p3;
-    save('..\Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
+    save('Data\Eclipse9_cells_discharge.mat', 'decharge0C2', 'decharge1C', 'decharge2C');
 end
 
 %% Section spéciale pour le calcul de l'élévation de la température dans le battery pack d'Éclipse 9
@@ -166,8 +166,8 @@ temps = 270;% s      Le tour de Rémi à 80km/h sur une piste de 6 km = 4.5 min
 
 
 if nargin == 0
-battetyTempRise = batteryLosses*temps/(masse_batt*chaleur_massique)
-battetyFinalTemp = T_ambiant+battetyTempRise
+battetyTempRise = batteryLosses*temps/(masse_batt*chaleur_massique);
+battetyFinalTemp = T_ambiant+battetyTempRise;
 
 figure, hold on, title('ÉCLIPSE IX : Battery pack discharge')
 plot(discharge_0p2C(:,1), nb_cell_serie*discharge_0p2C(:,2), '*r')
