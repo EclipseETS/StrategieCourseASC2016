@@ -149,16 +149,16 @@ end
 
 % Configuration du battery pack
 chaleur_massique = 830; % J/(kg*°C) tiré de http://www.inforlab-chimie.fr/doc/document_fichier_279.pdf
-nb_cell_serie = 32;
-nb_cell_para = 13;
-% nb_cell_total = nb_cell_serie*nb_cell_para;
+nb_cell_serie = 38;
+nb_cell_para = 11;
+nb_cell_total = nb_cell_serie*nb_cell_para;
 Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 Rint = nb_cell_serie/nb_cell_para*Rcell;    % ohm
 masse_batt = 20; % kg
 
 % Conditions d'opération
 T_ambiant = 45; % Celsius
-% Tension_batt = 134; % V
+Tension_batt = 134; % V
 Courant_batt = 50; % A
 
 batteryLosses = Rint.*Courant_batt.^2;   % W
@@ -167,7 +167,7 @@ temps = 270;% s      Le tour de Rémi à 80km/h sur une piste de 6 km = 4.5 min
 
 if nargin == 0
 battetyTempRise = batteryLosses*temps/(masse_batt*chaleur_massique);
-% battetyFinalTemp = T_ambiant+battetyTempRise;
+battetyFinalTemp = T_ambiant+battetyTempRise;
 
 figure, hold on, title('ÉCLIPSE IX : Battery pack discharge')
 plot(discharge_0p2C(:,1), nb_cell_serie*discharge_0p2C(:,2), '*r')

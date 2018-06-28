@@ -24,13 +24,13 @@
 %  Date de création : 25-06-2017
 %  Dernière modification :
 %%
-
-Latitude = '30.134';
-Longitude = '-97.635';
+Latitude = num2str(Parcours.Latitude);
+Longitude = num2str(Parcours.Longitude);
 url = ['https://api.solcast.com.au/radiation/forecasts?longitude=' Longitude '&latitude=' Latitude '&format=json&api_key=DowFFmYJnUK_IEhY6Az6nkcer_os0HR2'];
 try  
 %   api = 'https://api.solcast.com.au/radiation/forecasts?longitude=-97.635&latitude=30.134&format=json&api_key=DowFFmYJnUK_IEhY6Az6nkcer_os0HR2';
     donnees_solaire = webread (url);
+
     
     forecasts = struct2cell(donnees_solaire.forecasts);
     global_horizontal_irradiance = cell2mat(forecasts(1,:));
@@ -39,13 +39,13 @@ try
 
     date = zeros(length(forecasts), 6);
     
-    for k = 1:length(forecasts)
-        startingTime = strsplit(strjoin(forecasts(13,k)), 'T');
+    for Valeurs_solaires = 1:length(forecasts)
+        startingTime = strsplit(strjoin(forecasts(13,Valeurs_solaires)), 'T');
         startingHour = char(startingTime(end));
         startingHour = startingHour(1:end-1);
         startingTime = strjoin([startingTime(1) ' ' startingHour]);
         startingTime = datestr(datenum(startingTime)-5/24, 'yyyy-mm-dd HH:MM:SS'); % Correction du décalage entre UTC et CDT (Austin, Texas UTC-5)
-        date(k,:) = datevec(startingTime, 'yyyy-mm-dd HH:MM:SS');
+        date(Valeurs_solaires,:) = datevec(startingTime, 'yyyy-mm-dd HH:MM:SS');
     end
     
 
@@ -55,7 +55,7 @@ try
     solarForecast.global_horizontal_irradiance = global_horizontal_irradiance;
     solarForecast.date = date;
     
-    filename = ['../Data/SunForecastFSGP2017' datestr(now, '-mmm-dd') '.mat'];  
+    filename = ['../Data/SunForecastFSGP2018' datestr(now, '-mmm-dd') '.mat'];  
     save(filename, 'solarForecast');
     disp('Les prévisions solaires ont été mises à jour')
 
@@ -66,5 +66,3 @@ catch e
     disp('ALERTE : Les prévisions solaires n''ont pas été mises à jour')
 %   load('Data/SunForecastFSGP2017-Jun-29.mat')
 end
-
-

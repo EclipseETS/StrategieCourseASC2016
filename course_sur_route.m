@@ -13,22 +13,22 @@ clc, clear all, close all
 
 %% Importation des données du circuit à réaliser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
-load('ASC2016_stage3_plus_speed.mat')
-parcours = newParcours;
+load('ASC2018_Stage1.mat')
+% parcours = newParcours;
 
 %% Vérification de la présence des limites de vitesse dans le fichier du parcours
 contraintes.noSpeedLimit = 0;
 try
-    parcours.speed_limit;
+    newParcours.speed_limit;
 catch E
     contraintes.noSpeedLimit = 1;
 end
 
 %% Charge tous les paramètres de la simulation5
-run('parameterGeneratorEclipseIX.m')
+run('Models/parameterGeneratorEclipseX.m')
 
-etat_course.index_depart = 13170; %round(0.47 * length(parcours.distance)); % Départ à un pourcentage du parcours
-routeLog = routeSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
+etat_course.index_depart = round(0.47 * length(newParcours.distance)); % Départ à un pourcentage du parcours
+routeLog = routeSimulator(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
 
 routeLog.puissance_elec_traction(isnan(routeLog.puissance_elec_traction)) = 0;
 
@@ -42,7 +42,7 @@ puissance_moyenne_totale = mean(puissance_moyenne);
 
 fprintf('\nHeure de départ %s \n', datestr(etat_course.heure_depart));
 fprintf('Heure finale %s \n', datestr(routeLog.heure_finale));
-fprintf('Distance parcourue %3.2f km \n', parcours.distance(end)-parcours.distance(etat_course.index_depart));
+fprintf('Distance parcourue %3.2f km \n', newParcours.distance(end)-newParcours.distance(etat_course.index_depart));
 fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
 fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 
@@ -53,17 +53,17 @@ hold on, grid on, title('FSGP 2016')
 
 for k = 1:length(routeLog)
 figure(h1)
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.puissance_elec_totale, 'b')
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.puissancePV, 'r')
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.puissance_moteurs, 'k')
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.SoC*1000, '--m')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_elec_totale, 'b')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissancePV, 'r')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_moteurs, 'k')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*1000, '--m')
 
 figure(h2)
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.SoC*100, '--m')
-plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.profil_vitesse*3.6, 'g')
-plot(parcours.distance + (k-1)*parcours.distance(end), parcours.speed_limit, 'r')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*100, '--m')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_vitesse*3.6, 'g')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), newParcours.speed_limit, 'r')
 
-% plot(parcours.distance + (k-1)*parcours.distance(end), routeLog.profil_accel*36, 'r')
+% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_accel*36, 'r')
 
 end
 
@@ -77,8 +77,8 @@ legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 
 
 
-% A = parcours.latitude;
-% B = parcours.longitude;
+% A = newParcours.latitude;
+% B = newParcours.longitude;
 % C = routeLog(1).puissance_elec_totale;
 % D = routeLog(1).energie_fournie_totale ./ routeLog(1).Vbatt;
 % E = routeLog(1).temps_cumulatif;
@@ -86,10 +86,10 @@ legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
 
 
 figure, hold on, grid on
-plot(parcours.distance, parcours.altitude);
+plot(newParcours.distance, newParcours.altitude);
 
 figure, hold on, grid on
-plot3(parcours.longitude, parcours.latitude, parcours. altitude)
+plot3(newParcours.longitude, newParcours.latitude, newParcours. altitude)
 
 figure, hold on, grid on
-plot(parcours.distance)
+plot(newParcours.distance)

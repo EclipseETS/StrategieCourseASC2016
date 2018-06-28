@@ -55,29 +55,31 @@ clc, clear all, close all
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner10m.mat'
 
 % CoTA (FSGP 2017)
-fichier_source = 'C:\Users\ClubEclipse\Downloads\CircuitOfTheAmericas.csv';
-fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\CircuitOfTheAmericas20m.mat'
+fichier_source = 'C:\Users\Mégane Lavallée\Downloads\brouter.csv';
+fichier_cible = 'C:\Users\Mégane Lavallée\Documents\Éclipse\Stratégie\StrategieCourse\Data\ASC2018_Stage1_speed.mat';
 
 % ***************************** IMPORTANT ****************************************
 % Ajuster la distance maximale entre chaque point si nécessaire (Standard : 100 m)
 % ********************************************************************************
-interval_max = 20; % mètres      Distance maximale entre deux points
+interval_max = 10; % mètres      Distance maximale entre deux points
 
 
 % Charge un fichier source .csv dont le format est [Type Latitude Longitude Altitude(m) Distance(km) Interval(m)]
-parcours = importGPSfromCSV(fichier_source);
-newParcours = linearInterpolationGPSdata(parcours, interval_max);
+% newParcours = importGPSfromCSV(fichier_source);
 
-% Génère des figures 2D et 3D du parcours.
-figure, hold on, title('Carte 2D du parcours')
-plot(parcours.latitude, parcours.longitude, '*')
+newParcours = linearInterpolationGPSdata(importGPSfromCSV(fichier_source), interval_max);
+% newParcours = importSPEEDfromCSV(fichier_source);
+%%
+%Génère des figures 2D et 3D du newParcours.
+figure, hold on, title('Carte 2D du newParcours')
+plot(newParcours.latitude, newParcours.longitude, '*')
 plot(newParcours.latitude, newParcours.longitude, '.r')
 legend('Données brutes', 'Données traitées', 'location', 'southeast')
 xlabel('Longitude')
 ylabel('Latitude')
 
-figure, hold on, title('Carte 3D du parcours')
-plot3(parcours.latitude, parcours.longitude, parcours.altitude, '*')
+figure, hold on, title('Carte 3D du newParcours')
+plot3(newParcours.latitude, newParcours.longitude, newParcours.altitude, '*')
 plot3(newParcours.latitude, newParcours.longitude, newParcours.altitude, 'r.')
 legend('Données brutes', 'Données traitées', 'location', 'southeast')
 xlabel('Longitude')
@@ -85,7 +87,7 @@ ylabel('Latitude')
 zlabel('Altitude (m)')
 
 figure, hold on, title('Altitude')
-plot(parcours.distance, parcours.altitude, '.')
+plot(newParcours.distance, newParcours.altitude, '.')
 plot(newParcours.distance, newParcours.altitude, 'r.')
 legend('Données brutes', 'Données traitées')
 xlabel('Distance (km')
@@ -97,7 +99,7 @@ xlabel('Distance (km')
 ylabel('Pente (%)')
 
 
-%% Ajout de l'information sur la vitesse maximale du parcours
+%% Ajout de l'information sur la vitesse maximale du newParcours
 %  Un fichier excel contenant une colone correspondants à la distance totale (en miles) et un colone 
 %  correspondant à la vitesse maximale (en mph) doit être fourni
 if exist('speed_limit_filename', 'var')
@@ -127,4 +129,4 @@ if exist('speed_limit_filename', 'var')
 end
 
 
-% save(fichier_cible, 'newParcours')
+ save(fichier_cible, 'newParcours')

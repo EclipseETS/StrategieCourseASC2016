@@ -38,9 +38,19 @@ cellModel = load('../Data/Eclipse9_cells_discharge.mat'); % Octave
 %load('SoleilFSGPcoef.mat');
 load('../Data/SoleilFSGPcoef.mat'); % Octave
 
+%% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
+%load('etapesASC2016_continuous.mat')
+%load('TrackPMGInner10m.mat')
+load('../Data/TrackPMGInner10m.mat') % Octave
+%load('PittRaceNorthTrack10m.mat')
+% Parcours = newParcours;
+Parcours.Longitude = newParcours.longitude(1);
+Parcours.Latitude = newParcours.latitude(1);
+
+
 %% Prévisions solaires
-run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
-load('../Data/SunForecastFSGP2017-Jul-06-19h.mat'); % Charge les meilleures prévisions solaires disponibles
+% run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
+load('../Data/SunForecastFSGP2017-Jul-08.mat'); % Charge les meilleures prévisions solaires disponibles
 
 %% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
@@ -50,10 +60,10 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 
 
 %% Contraintes du parcour
-strategy.SoC_ini = 0.39;         % State of Charge actuel(%)
-strategy.SoC_min = 0.4485;         % Final State of Charge (%)
+strategy.SoC_ini = 1;         % State of Charge actuel(%)
+strategy.SoC_min = 0.3;         % Final State of Charge (%)
 strategy.vitesse_min = 15/3.6;   % m/s (20 km/h)
-strategy.vitesse_moy = 50/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_moy = 75/3.6;   % m/s  *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.6;  % m/s (120 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
@@ -62,10 +72,10 @@ strategy.decel_nom = -0.03;      % m/s^2
 
 
 %% Reglements de la FSGP 2017 rev. A
-reglement.heure_depart = 19/24; % Depart a 9h00 CDT     (10h la premiere journee de la FSGP) (Actuellement a 13h15)
-reglement.heure_arret = 19/24; % Arret a 18h00 CDT   (17h les deux dernieres journees de la FSGP)
+reglement.heure_depart = 9/24; % Depart a 9h00 CDT     (10h la premiere journee de la FSGP) (Actuellement a 13h15)
+reglement.heure_arret = 17/24; % Arret a 18h00 CDT   (17h les deux dernieres journees de la FSGP)
 reglement.impound_out = 7/24; % Batterie disponible a partir de 7h00 CDT
-reglement.impound_in = 19/24; % Batterie non-disponible a partir de 20h00 CDT
+reglement.impound_in = 20/24; % Batterie non-disponible a partir de 20h00 CDT
 reglement.fsgp_fin_recharge_matin = 9/24; % Fin de la recharge du matin a 8h30 CDT
 % reglement.checkpoint = [350.762]; % km (Distance avant chaque checkpoint) **** ETAPE 1 UNIQUEMENT ****
 
@@ -96,21 +106,23 @@ meteo.dateVec_irradiance = solarForecast.date;
 
 
 %% Parametres du vehicule Eclipse 9
+% Infos sur les paramètres du moteur :
+% http://lati-solar-car.wikispaces.com/file/view/Solar+Car+Wheel+Motor+Information+Sheet.pdf
 eclipse9.masse_totale = 295;     % kg % ECLIPSE 9 : 220 kg sans pilote, pilote avec ballastes : 80 kg
 eclipse9.aire_frontale = 1.26;   % m^2
-eclipse9.coef_trainee = 0.233; % Calcule le 30 juillet 2016 ASC jour 1  %0.125;%0.135;   % coefficient de trainee aerodynamique       ********** A VERIFIER **********
+eclipse9.coef_trainee = 0.233; % Calcule le 30 juillet 2016 ASC jour 1  %0.125;%0.135;  %Test le 10 juin 2017 a PMG : 0.233
 %eclipse9.coef_trainee = 0.25;      % ECLIPSE 9 SANS COQUE
-eclipse9.coef_roulement = 0.0073 ; % Test le 10 juin 2017 a PMG
+eclipse9.coef_roulement = 0.0073 ; % Test le 10 juin 2017 a PMG : 0.0073  % 1 moteur qui frotte à la FSGP 2017 : 0.016
 eclipse9.frottement = eclipse9.masse_totale * eclipse9.coef_roulement * constantes.const_grav;       % N - 
 eclipse9.rayon_roue = 0.2725;    % m                                        
 eclipse9.surface_solaire = 5.994;    % m^2
 eclipse9.nb_roue = 4;            % Nombre de roues
 eclipse9.largeur_pneu = 0.0635;    % m                              
 eclipse9.hauteur_roue = 2*eclipse9.rayon_roue;     % m             
-eclipse9.nb_moteur = 2;
+eclipse9.nb_moteur = 1;
 eclipse9.vitesse_nom = 111;    % rad/s (Pour un moteur)
 eclipse9.couple_nom = 16.2;    % Nm    (Pour un moteur)
-eclipse9.couple_max = 42;      % Nm    (Pour un moteur)
+eclipse9.couple_max = 80;      % Nm    (Pour un moteur)
 eclipse9.puissance_max = 1800; % W     (Pour un moteur)
 eclipse9.NbCellPV = 391;
 eclipse9.SurfaceCellPV = 0.01533282; % m^2
@@ -121,20 +133,22 @@ eclipse9.nb_cell_para = 11;
 eclipse9.nb_cell_total = eclipse9.nb_cell_serie*eclipse9.nb_cell_para;
 eclipse9.Ecell_max = 4.2;    % V
 eclipse9.Ecell_min = 2.6;    % V
-eclipse9.Ccell = 2.9599;      % Ah Valeur mesurée par JF mai 2017
+eclipse9.Ccell = 2.9599;     % Ah Valeur mesurée par JF mai 2017
 eclipse9.Crate_max = 2;
 eclipse9.Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 eclipse9.Ebatt_max = eclipse9.Ecell_max*eclipse9.nb_cell_serie; % V max
 eclipse9.Ibatt_max = eclipse9.Crate_max*eclipse9.Ccell*eclipse9.nb_cell_para;   % Courant de la batterie à 2 C
 eclipse9.Ibatt_nom = eclipse9.Ccell*eclipse9.nb_cell_para;             % Courant de la batterie à 1 C
 eclipse9.Rint = eclipse9.nb_cell_serie/eclipse9.nb_cell_para*eclipse9.Rcell;    % ohm
+eclipse9.Battery_capacity = eclipse9.Ccell * eclipse9.nb_cell_total;   % kWh
 
 
 %% Valeurs initiales au depart
 etat_course.journee = 1;
 etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
+etat_course.nbLapMax = 1;
 etat_course.vitesse_ini = 0; % m/s
-etat_course.heure_depart = datenum([2017,07,06,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
+etat_course.heure_depart = datenum([2017,07,09,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
 
  

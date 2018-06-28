@@ -1,11 +1,12 @@
-%% Eclipse 9
+%% Eclipse X
 %  Le script course_sur_circuit.m permet de simuler la performance d'une
-%  voiture solaire sur un parcours sur circuit. L'objectif est de connaitre
+%  voiture solaire sur un newParcours sur circuit. L'objectif est de connaitre
 %  le nombre de tours que le vehicule peut realiser en respectant la
 %  capacite de la batterie.mn
 %
 %  Auteur : Julien Longchamp
-%  Date de creation : 17-06-2016
+
+%  Date de creation : 17-11-2016
 %  Dernieres modifications : 13-01-2017 (JL) Redaction du guide de l'utilisateur
 %                            07-07-2016 (JL)
 %                            04-07-2017 Mégane Lavallee
@@ -21,58 +22,60 @@ addpath('Outils');
 %% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
 %load('etapesASC2016_continuous.mat')
 %load('TrackPMGInner10m.mat')
-load('Data/FSGP2017_CircuitOfTheAmericas10m.mat'); % Octave
+% load('Data/FSGP2017_CircuitOfTheAmericas10m.mat'); % Octave
 %load('PittRaceNorthTrack10m.mat')
-parcours = newParcours;
+% newParcours = newParcours;
 
 %% Charge tous les parametres de la simulation
-run('Models/parameterGeneratorEclipseIX.m');
+run('Models/parameterGeneratorEclipseX.m');
+
 
 
 %% Simulation des tours de piste
 % strategy.vitesse_moy = 0; % on commence a 0 pour incrementer jusqua la bonne valeur
-nbLapMax = 100;%ceil(485 / parcours.distance(end)); % 485 km / longueur d'un tour
+nbLapMax = etat_course.nbLapMax; %ceil(485 / newParcours.distance(end)); % 485 km / longueur d'un tour
 outOfFuel = 0; % Flag qui tombe a 1 lorsque la batterie est a plat
 while outOfFuel == 0 && etat_course.nbLap < nbLapMax
 %     
 %     etat_course.nbLap = etat_course.nbLap+1;
-%     lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
+%     lapLog(etat_course.nbLap) = lapSimulator(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
 %     
 %     etat_course.SoC_start = lapLog(etat_course.nbLap).SoC(end);
 %     etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
 
+
         etat_course.nbLap = etat_course.nbLap+1;
-        lapLog(etat_course.nbLap) = lapSimulator(parcours, etat_course, cellModel, strategy, eclipse9, constantes, reglement, meteo);
+        lapLog(etat_course.nbLap) = lapSimulator(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
 
         etat_course.SoC_start = lapLog(etat_course.nbLap).SoC(end);
         etat_course.vitesse_ini = lapLog(etat_course.nbLap).profil_vitesse(end);
 
 
     if etat_course.journee < 3 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
-        [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
+        [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, Eclipse);
         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
-        [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
+        [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, Eclipse);
        
 %         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
         etat_course.vitesse_ini = 0;
         
-%         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
-%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
+%         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, Eclipse);
+%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, Eclipse);
         etat_course.SoC_start = SoC_out_matin;     
 %         disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
         
 %     elseif journee == 2 && (mod(lapLog(etat_course.nbLap).heure_finale,1) > reglement.heure_arret || lapLog(etat_course.nbLap).outOfFuel)
 %         journee = journee + 1;
 %         fprintf('La journée s''est finie a %.0fh%.0f \n', mod(lapLog(etat_course.nbLap).heure_finale, 1)*24, mod(mod(lapLog(etat_course.nbLap).heure_finale, 1)*24,1)*60);
-% %       [SoC_out_soir] = rechargeSimulator(etat_course, mod(lapLog(etat_course.nbLap).heure_finale, 1), reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
-%         [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
-%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
+% %       [SoC_out_soir] = rechargeSimulator(etat_course, mod(lapLog(etat_course.nbLap).heure_finale, 1), reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, Eclipse);
+%         [SoC_out_soir] = rechargeSimulator(etat_course, reglement.heure_arret , reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, Eclipse);
+%         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, Eclipse);
 %        
 %         etat_course.heure_depart = floor(etat_course.heure_depart+1)+reglement.heure_depart;
 %         etat_course.vitesse_ini = 0;
 %         
-% %         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, eclipse9);
-% %         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, eclipse9);
+% %         [SoC_out_soir] = rechargeSimulator(etat_course, lapLog(etat_course.nbLap).heure_finale, reglement.impound_in, meteo, lapLog(etat_course.nbLap).SoC(end), cellModel, Eclipse);
+% %         [SoC_out_matin] = rechargeSimulator(etat_course, reglement.impound_out, reglement.fsgp_fin_recharge_matin, meteo, SoC_out_soir, cellModel, Eclipse);
 %         etat_course.SoC_start = SoC_out_matin;     
 %         disp(['SoC recharger : ' num2str(SoC_out_matin*100) '%'])
 %         
@@ -92,25 +95,25 @@ end
 
 SoC_final = lapLog(etat_course.nbLap).SoC(end) * 100; % (%)
 
-for k = 1:length(lapLog)
-    vitesse_moyenne(k) = mean(lapLog(k).profil_vitesse);
-    puissance_moyenne(k) = mean(lapLog(k).puissance_elec_traction);
-    puissancePV_moyenne(k) = mean(lapLog(k).puissancePV);
+for Nb_laps = 1:length(lapLog)
+    vitesse.moyenne(Nb_laps) = mean(lapLog(Nb_laps).profil_vitesse);
+    puissance.moyenne(Nb_laps) = mean(lapLog(Nb_laps).puissance_elec_traction);
+    puissance.PV_moyenne(Nb_laps) = mean(lapLog(Nb_laps).puissancePV);
 end
-vitesse_moyenne_totale = mean(vitesse_moyenne);
-puissance_moyenne_totale = mean(puissance_moyenne);
-puissancePV_moyenne_totale = mean(puissancePV_moyenne);
-puissance_net_moy = puissancePV_moyenne_totale-puissance_moyenne_totale;
+vitesse.moyenne_totale = mean(vitesse.moyenne);
+puissance.moyenne_totale = mean(puissance.moyenne);
+puissance.PV_moyenne_totale = mean(puissance.PV_moyenne);
+puissance.net_moy = puissance.PV_moyenne_totale-puissance.moyenne_totale;
 
 disp(datestr(lapLog(etat_course.nbLap).heure_finale));
 
 fprintf('\nLa voiture s''est arretee apres %3d tours \n', etat_course.nbLap);
 fprintf('State of charge final %.2f pourcent \n', SoC_final);
-fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*parcours.distance(end));
-fprintf('Vitesse moyenne %3.2f km/h \n', vitesse_moyenne_totale*3.6);
-fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
-fprintf('Puissance PV moyenne %3.2f W \n', puissancePV_moyenne_totale);
-fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance_net_moy);
+fprintf('Distance parcourue %3.2f km \n', etat_course.nbLap*newParcours.distance(end));
+fprintf('Vitesse moyenne %3.2f km/h \n', vitesse.moyenne_totale*3.6);
+fprintf('Puissance moyenne %3.2f W \n', puissance.moyenne_totale);
+fprintf('Puissance PV moyenne %3.2f W \n', puissance.PV_moyenne_totale);
+fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance.net_moy);
 
     
     
@@ -120,16 +123,16 @@ fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance_net_moy);
 % hold on, grid on, title('Evolution de l''''etat de charge')
 % for k = 1:length(lapLog)
 %     figure(h1)
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissancePV, 'dr')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).puissance_moteurs, '.k')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*1000, '--m')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).puissance_elec_totale, '.b')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).puissancePV, 'dr')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).puissance_moteurs, '.k')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).SoC*1000, '--m')
 %     
 %     figure(h2)
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).SoC*100, '--m')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_vitesse*3.6, 'g')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).profil_accel*36, 'r')
-%     plot(parcours.distance + (k-1)*parcours.distance(end), lapLog(k).elevation, '.b')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).SoC*100, '--m')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).profil_vitesse*3.6, 'g')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).profil_accel*36, 'r')
+%     plot(newParcours.distance + (k-1)*newParcours.distance(end), lapLog(k).elevation, '.b')
 % end
 % 
 % figure(h1)
@@ -140,8 +143,8 @@ fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance_net_moy);
 % xlabel('distance (km)')
 % legend('SoC', 'Vitesse (km/h)', 'Accel (10 km/h^2)');
 
-% A = parcours.latitude;
-% B = parcours.longitude;
+% A = newParcours.latitude;
+% B = newParcours.longitude;
 % C = lapLog(1).puissance_elec_totale;
 % D = lapLog(1).energie_fournie_totale ./ lapLog(1).Vbatt;
 % E = lapLog(1).temps_cumulatif;

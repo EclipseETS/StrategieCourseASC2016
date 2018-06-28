@@ -1,4 +1,4 @@
-function [ SoC_out ] = rechargeSimulator(etat_course, start_time, stop_time, meteo, SoC_in, cellModel, eclipse9)
+function [ SoC_out ] = rechargeSimulator(etat_course, start_time, stop_time, meteo, SoC_in, cellModel, Eclipse)
 %% Éclipse 9
 %  La fonction rechargeSimulator permet de simuler une recharge des panneaux solaires durant un interval de temps déterminé.
 %
@@ -25,7 +25,7 @@ function [ SoC_out ] = rechargeSimulator(etat_course, start_time, stop_time, met
 % temps_recharge = linspace(start_time, stop_time, 120); % Sépare la durée de la recharge en 120 points
 stop_time = stop_time * 24;
 start_time = start_time * 24;
-demi_heure = ((stop_time - start_time)/.5);
+% demi_heure = ((stop_time - start_time)/.5);
 temps_recharge = start_time:0.5:stop_time; % Sépare la durée de la recharge en 30 points (30
 temps_recharge = temps_recharge (1,2:end);
 delta_t = 1800; % secondes, car c'est calculer a chaque 30 minutes
@@ -50,8 +50,8 @@ for r = 1:length(temps_recharge)
         error ('IndexPV ne doit pas etre egal a zero')
     end
     
-    irrandiance = meteo.direct_irradiance(1 , indexPV);
-    puissancePV(r) = irrandiance * eclipse9.SurfaceTotalePV * eclipse9.EfficaciteSunPowerBinH; %W
+    irrandiance = meteo.normal_irradiance(1 , indexPV);
+    puissancePV(r) = irrandiance * Eclipse.SurfaceTotalePV_recharge * Eclipse.EfficaciteSunPowerBinH; %W
     warning ('on')
  %%   
     
@@ -64,14 +64,17 @@ for r = 1:length(temps_recharge)
     energie_recuperee = energie_recuperee + puissancePV(r) * delta_t ; % Joules (1 W*s = 1 J)   
 end
 energie_recuperee_wh = energie_recuperee/3600; % Wh Énergie récupérée totale durant l'arrêt
-SoC_Ah = eclipse9.Ccell * (1-SoC_in);    % Ah      
-Ebatt = 38 * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
-new_SoC_Ah = SoC_Ah - (energie_recuperee_wh/Ebatt/11); % ************ TODO : REMOVE THE MAGIC NUMBERS ************ !!!!!!!!!!!! MAGIC NUMBERS ALERT !!!!!!!!!!!!
+%SoC_Ah = Eclipse.Ccell * (1-SoC_in);
+SoC_Ah = Eclipse.Ccell * (1-SoC_in);% Ah      
+Ebatt = Eclipse.nb_cell_serie * polyval(cellModel.decharge0C2, SoC_Ah); % V (Tension E0 instantanée du batterie pack obtenue sur la courbe 0,2C
+new_SoC_Ah = SoC_Ah - (energie_recuperee_wh/Ebatt/Eclipse.nb_cell_para);
 new_SoC_Ah = max([new_SoC_Ah, 0]);
-new_SoC_Ah = min([new_SoC_Ah, eclipse9.Ccell]);
-SoC_out = (eclipse9.Ccell - new_SoC_Ah) / eclipse9.Ccell;
+%new_SoC_Ah = min([new_SoC_Ah, Eclipse.Ccell]);
 
-fprintf ('Energie récupéré durant la recharge : %.2f kWh \n', energie_recuperee_wh/1000)
+
+SoC_out = (Eclipse.Ccell - new_SoC_Ah) / Eclipse.Ccell;
+
+fprintf ('Energie récupéré durant la recharge : %.2f Wh \n', energie_recuperee_wh)
 fprintf ('State of Charge après la recharge : %.2f pourcent \n',SoC_out*100)
 
 end

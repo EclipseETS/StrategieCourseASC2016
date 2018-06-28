@@ -42,7 +42,7 @@ function data = importGPSfromCSV(filename, startRow, endRow)
 
 
 %% Initialize variables.
-delimiter = ',';
+delimiter = ' ';
 if nargin<=2
     startRow = 2;
     endRow = inf;
@@ -57,7 +57,7 @@ end
 %	column6: double (%f)
 %   column7: double (%f)
 % For more information, see the TEXTSCAN documentation.
-formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
+formatSpec = '%s%s%s%s%s%s%s%[^\n\r]';
 
 %% Open the text file.
 fileID = fopen(filename,'r');
