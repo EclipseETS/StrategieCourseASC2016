@@ -24,18 +24,14 @@
 cellModel = load('../Data/Eclipse9_cells_discharge.mat'); % Octave
 
 %% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
-% load('../Data/TrackPMGInner10m.mat')
+load('../Data/TrackPMGInner10m.mat')
 % load('../Data/MotorsportParkHasting.mat')
-load('../Data/ASC2018_Stage1speed.mat')
-% load('../Data/ASC2018_Stage2speed.mat')
-% load('../Data/ASC2018_Stage3speed.mat')
-% load('../Data/ASC2018_Stage4speed.mat')
-% load('../Data/ASC2018_Stage5speed.mat')
+% load('../Data/ASC2018_Stage1speed.mat')
+Parcours.Longitude = newParcours.longitude(1);
+Parcours.Latitude = newParcours.latitude(1);
 
 %% Prévisions solaires
 % Mettre a jour les donnees solaire au besoin
-% Parcours.Longitude = newParcours.longitude(1);
-% Parcours.Latitude = newParcours.latitude(1);
 % run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
 load('../Data/SunForecastFSGP2018-Jun-26.mat'); % Charge les meilleures prévisions solaires disponibles
 
@@ -50,7 +46,7 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 strategy.SoC_ini = 1;         % State of Charge actuel(%)
 strategy.SoC_min = 0.2;         % Final State of Charge (%)
 strategy.vitesse_min = 15/3.6;   % m/s (20 km/h)
-strategy.vitesse_moy = 75/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_moy = 50/3.6;   % m/s  *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.6;  % m/s (120 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
@@ -123,7 +119,7 @@ etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
 etat_course.nbLapMax = 1;
 etat_course.vitesse_ini = 0; % m/s
-etat_course.heure_depart = datenum([2018,06,31,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
+etat_course.heure_depart = datenum([2018,06,26,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
 
 %% Moyenne de soleil
 Soleil.Debut_journee = datevec(etat_course.heure_depart) ; %[yyyy, mm, jj, hh, mm, ss]

@@ -1,0 +1,48 @@
+Longitude	Latitude	Elevation	Distance	CostPerKm	ElevCost	TurnCost	NodeCost	InitialCost	WayTags	NodeTags
+-119054455	43586047	1264	145	3223	0	0	0	0	highway=primary	highway=traffic_signals
+-119059618	43585894	1266	423	2544	0	0	0	0	highway=primary maxspeed=40	highway=traffic_signals
+-119061638	43585713	1267	168	2532	0	0	0	0	highway=primary maxspeed=40	
+-119063327	43584694	1266	183	2530	0	0	0	0	reversedirection=yes highway=primary maxspeed=40	
+-119069602	43580006	1268	747	2048	0	0	0	0	reversedirection=yes highway=primary maxspeed=60	
+-119069415	43579930	1267	13	18048	0	0	0	0	highway=residential	
+-119069602	43580006	1268	13	8085	0	0	0	0	reversedirection=yes highway=residential	
+-119073647	43574827	1268	669	1949	0	0	0	0	reversedirection=yes highway=primary maxspeed=60	highway=traffic_signals
+-119084895	43556150	1265	2293	2177	0	0	0	0	reversedirection=yes highway=primary maxspeed=60	
+-119084670	43546695	1260	1061	1532	0	0	0	0	reversedirection=yes highway=primary maxspeed=70	
+-119082653	43541350	1271	617	1250	0	0	0	0	reversedirection=yes highway=primary maxspeed=90	
+-119894730	43568012	1407	70389	1156	0	0	0	0	reversedirection=yes highway=primary maxspeed=100	
+-120162737	43611117	1353	23387	1157	0	0	0	0	highway=primary maxspeed=100 oneway=no	
+-120598058	43812345	1413	42260	1156	0	0	0	0	highway=primary surface=asphalt maxspeed=100	
+-120606300	43814593	1409	710	1739	0	0	0	0	highway=primary surface=asphalt maxspeed=90	
+-121152890	44037299	1081	52963	1874	0	0	0	0	highway=primary surface=asphalt maxspeed=100	
+-121153192	44037515	1080	34	1587	0	0	0	0	highway=primary maxspeed=100	
+-121251267	44054874	1107	8374	1161	0	0	0	0	highway=primary surface=paved maxspeed=100	
+-121253580	44054866	1110	186	1249	0	0	0	0	highway=primary surface=asphalt maxspeed=90	
+-121255468	44054873	1110	151	1249	0	0	0	0	reversedirection=yes highway=primary surface=asphalt maxspeed=90	
+-121260057	44054890	1106	369	1810	0	0	0	0	reversedirection=yes highway=primary surface=asphalt maxspeed=70	
+-121263630	44054901	1106	286	1893	0	0	0	0	reversedirection=yes highway=primary surface=paved maxspeed=70	highway=traffic_signals
+-121263788	44054901	1106	13	10243	0	0	0	0	reversedirection=yes highway=primary surface=paved maxspeed=70	highway=traffic_signals
+-121263685	44053845	1108	121	9336	0	0	0	0	highway=tertiary surface=asphalt maxspeed=60 oneway=yes	
+-121263664	44052768	1110	121	9309	0	0	0	0	reversedirection=yes highway=tertiary surface=asphalt maxspeed=60	
+-121263717	44051458	1112	147	2910	0	0	0	0	highway=tertiary surface=asphalt maxspeed=60 oneway=yes	highway=traffic_signals
+-121263716	44051360	1112	11	16980	0	0	0	0	highway=tertiary surface=asphalt maxspeed=60 oneway=yes	highway=traffic_signals
+-121263611	44050384	1113	111	3084	0	0	0	0	highway=tertiary surface=asphalt maxspeed=60 oneway=yes	
+-121263615	44049886	1115	56	2686	0	0	0	0	reversedirection=yes highway=tertiary surface=asphalt maxspeed=60	
+-121263623	44047726	1119	241	2126	0	0	0	0	reversedirection=yes highway=tertiary surface=asphalt maxspeed=70	
+-121263621	44047566	1119	18	2162	0	0	0	0	reversedirection=yes highway=tertiary surface=paved maxspeed=70	
+-121263699	44036968	1128	1181	1525	0	0	0	0	reversedirection=yes highway=tertiary surface=asphalt maxspeed=70	highway=traffic_signals
+-121263696	44036823	1128	17	13220	0	0	0	0	reversedirection=yes highway=tertiary maxspeed=70	highway=crossing crossing=zebra
+-121263704	44034965	1124	207	2250	0	0	0	0	reversedirection=yes highway=tertiary maxspeed=70	
+-121259290	44009880	1124	2884	1525	0	0	0	0	reversedirection=yes highway=tertiary surface=paved maxspeed=70	
+-121284123	44007970	1145	2076	1366	0	0	0	0	highway=tertiary surface=paved	
+-121313996	43998375	1190	2771	1742	0	0	0	0	highway=tertiary surface=paved maxspeed=60	
+-121334776	43992022	1196	1991	2080	0	0	0	0	highway=tertiary surface=paved	
+-121335339	43992235	1196	51	1811	0	0	0	0	highway=tertiary	
+-121336317	43992612	1197	89	1643	0	0	0	0	reversedirection=yes highway=tertiary	
+-121335706	43993597	1195	120	4712	0	0	0	0	reversedirection=yes highway=trunk_link	
+-121335592	43991491	1198	408	2145	0	0	0	0	highway=trunk_link oneway=yes	
+-121337491	43988800	1199	336	5630	0	0	0	0	highway=trunk oneway=yes	
+-121346588	43970450	1210	2194	1248	0	0	0	0	highway=trunk maxspeed=90 oneway=yes	
+-121345285	43966307	1231	541	3331	0	0	0	0	reversedirection=yes highway=service	
+-121342680	43965220	1234	259	3386	0	0	0	0	highway=service oneway=yes	
+-121342389	43965051	1234	34	6231	0	0	0	0	highway=service	

@@ -35,7 +35,7 @@ try
     forecasts = struct2cell(donnees_solaire.forecasts);
     global_horizontal_irradiance = cell2mat(forecasts(1,:));
     direct_normal_irradiance = cell2mat(forecasts(4,:));
-    diffuse_horizontal_irradiance = cell2mat(forecasts(7,:));
+    diffuse_horizontal_irradiance = cell2mat(forecasts(8,:));
 
     date = zeros(length(forecasts), 6);
     

@@ -32,7 +32,7 @@ end
 %% Charge tous les paramètres de la simulation5
 run('Models/parameterGeneratorEclipseX.m')
 
-etat_course.index_depart = round(.47 * length(newParcours.distance)); % Départ à un pourcentage du parcours
+etat_course.index_depart = round( * length(newParcours.distance)); % Départ à un pourcentage du parcours
 routeLog = routeSimulator(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
 
 routeLog.puissance_elec_traction(isnan(routeLog.puissance_elec_traction)) = 0;

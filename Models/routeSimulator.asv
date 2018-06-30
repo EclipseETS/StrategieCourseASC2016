@@ -286,5 +286,5 @@ routeLog.puissancePV = puissancePV; % W
 routeLog.puissance_elec_traction = puissance_elec_traction; % W
 
 
-save('./Data/ASC_Stage1_ForceG', 'force_g');
+save('../Data/ASC_Stage1_ForceG', 'force_g');
 end

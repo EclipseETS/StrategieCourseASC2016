@@ -1,0 +1,107 @@
+Longitude	Latitude	Elevation	Distance	CostPerKm	ElevCost	TurnCost	NodeCost	InitialCost	WayTags	NodeTags
+-103733092	41844340	1228	2767	2121	0	0	0	0	highway=secondary surface=asphalt oneway=no	
+-103735869	41865677	1197	2446	20612	0	0	0	0	highway=secondary	
+-103733871	41865708	1195	167	2739	0	0	0	0	highway=secondary surface=paved	railway=level_crossing
+-103733749	41865710	1195	11	2550	0	0	0	0	highway=secondary surface=paved	railway=level_crossing
+-103694991	41866187	1185	3215	1248	0	0	0	0	highway=secondary surface=paved	
+-103694739	41874455	1186	924	2196	0	0	0	0	highway=secondary surface=asphalt maxspeed=70 oneway=no	
+-103687780	41881951	1187	1872	1524	0	0	0	0	highway=secondary surface=concrete maxspeed=70 oneway=no	
+-103687812	41881712	1187	27	1537	0	0	0	0	highway=secondary surface=concrete oneway=yes	
+-103688654	41881169	1187	105	3240	0	0	0	0	highway=trunk_link surface=concrete oneway=yes	
+-103693052	41881912	1187	383	1518	0	0	0	0	highway=trunk maxspeed=90 oneway=yes	
+-103694469	41882740	1189	153	1330	0	0	0	0	highway=trunk maxspeed=100 oneway=yes	
+-103823459	41944759	1206	13127	1456	0	0	0	0	highway=trunk oneway=yes	railway=level_crossing
+-103910446	41963593	1214	7723	1850	0	0	0	0	highway=trunk oneway=yes	
+-104052645	42002974	1231	13410	1628	0	0	0	0	highway=primary	
+-104161606	42052708	1244	10571	1159	0	0	0	0	highway=primary surface=paved	
+-104188809	42064646	1251	2629	1927	0	0	0	0	highway=primary	highway=traffic_signals
+-104194909	42067184	1254	581	1508	0	0	0	0	highway=primary	
+-104345326	42134022	1271	14556	1774	0	0	0	0	highway=primary surface=paved	
+-104345538	42136898	1271	328	2012	0	0	0	0	highway=primary	
+-104451624	42751027	1531	73928	1858	0	0	0	0	highway=primary surface=paved	
+-104451838	42755330	1530	480	22028	0	0	0	0	highway=primary maxspeed=50	highway=traffic_signals
+-104457190	42754444	1534	460	2063	0	0	0	0	highway=primary maxspeed=50	
+-104460759	42752950	1532	336	2053	0	0	0	0	highway=primary surface=paved maxspeed=50	
+-104921567	42763308	1521	39360	1166	0	0	0	0	highway=primary surface=paved maxspeed=100	
+-104922080	42763314	1520	42	1154	0	0	0	0	highway=primary	
+-105184299	42656498	1432	25486	1156	0	0	0	0	highway=primary surface=paved maxspeed=100	
+-105195716	42656750	1451	937	1156	0	0	0	0	highway=primary maxspeed=100	
+-105198571	42656801	1446	234	1768	0	0	0	0	highway=primary maxspeed=60	
+-105204860	42657002	1453	517	2053	0	0	0	0	reversedirection=yes highway=primary maxspeed=50	
+-105205738	42658308	1454	141	3638	0	0	0	0	highway=tertiary	
+-105204860	42657002	1453	141	5554	0	0	0	0	reversedirection=yes highway=tertiary	
+-105201424	42656881	1452	282	2061	0	0	0	0	highway=primary maxspeed=50	
+-105205845	42660722	1459	572	1490	0	0	0	0	highway=motorway_link oneway=yes	
+-105338290	42730805	1531	13690	939	0	0	0	0	highway=motorway oneway=yes	highway=motorway_junction
+-105344329	42736487	1503	838	1513	0	0	0	0	highway=motorway_link oneway=yes	
+-105382801	42748473	1468	3573	1860	0	0	0	0	highway=primary surface=paved	
+-105383353	42748468	1468	46	5468	0	0	0	0	highway=secondary	railway=level_crossing
+-105391695	42748683	1459	690	1689	0	0	0	0	highway=secondary	
+-105394318	42749408	1460	230	1353	0	0	0	0	highway=secondary surface=paved	
+-105406620	42762027	1483	2252	1974	0	0	0	0	highway=secondary	highway=traffic_signals
+-105406689	42762972	1485	106	5567	0	0	0	0	highway=primary surface=paved	
+-105419216	42762082	1522	1034	1464	0	0	0	0	highway=secondary	
+-105438059	42779915	1487	2690	1257	0	0	0	0	highway=secondary surface=paved	
+-105491507	42852983	1480	10136	1245	0	0	0	0	highway=secondary	
+-105491670	42853343	1484	43	1245	0	0	0	0	highway=secondary surface=paved	railway=level_crossing
+-105882258	42861451	1529	42940	15260	0	0	0	0	highway=secondary surface=paved	
+-105886990	42861456	1533	386	1831	0	0	0	0	highway=primary	
+-105888328	42861476	1534	109	1998	0	0	0	0	reversedirection=yes highway=primary	
+-106073172	42856940	1545	15879	1158	0	0	0	0	reversedirection=yes highway=primary surface=paved	
+-106214309	42850714	1561	12125	1158	0	0	0	0	reversedirection=yes highway=primary	
+-106270777	42857275	1569	4715	1354	0	0	0	0	highway=primary oneway=yes	highway=traffic_signals
+-106277209	42856352	1565	534	1486	0	0	0	0	highway=primary oneway=yes	
+-106278023	42856265	1565	67	1407	0	0	0	0	highway=primary	
+-106288405	42855393	1563	857	1154	0	0	0	0	reversedirection=yes highway=primary	
+-106292046	42854980	1566	302	1154	0	0	0	0	reversedirection=yes highway=primary surface=concrete	
+-106297697	42854261	1566	468	1496	0	0	0	0	reversedirection=yes highway=primary surface=concrete oneway=no	highway=traffic_signals
+-106316246	42850091	1564	1609	2028	0	0	0	0	reversedirection=yes highway=primary surface=paved oneway=no	highway=traffic_signals
+-106320940	42850085	1562	386	1891	0	0	0	0	reversedirection=yes highway=primary surface=paved oneway=no	highway=traffic_signals
+-106322356	42850087	1564	116	6067	0	0	0	0	reversedirection=yes highway=primary surface=paved oneway=no	highway=traffic_signals
+-106323767	42850084	1567	115	4684	0	0	0	0	reversedirection=yes highway=primary surface=paved oneway=no	highway=traffic_signals
+-106325188	42850082	1567	116	5072	0	0	0	0	reversedirection=yes highway=primary surface=paved oneway=no	highway=traffic_signals
+-106326605	42850084	1562	117	3417	0	0	0	0	highway=primary surface=paved oneway=no	highway=traffic_signals
+-106328588	42850094	1559	162	4414	0	0	0	0	highway=primary surface=paved oneway=no	highway=traffic_signals
+-106332095	42850082	1557	287	2132	0	0	0	0	highway=primary surface=paved oneway=no	
+-106336766	42848125	1562	461	1716	0	0	0	0	highway=primary surface=concrete	highway=traffic_signals
+-106337218	42851326	1561	359	5117	0	0	0	0	highway=secondary surface=asphalt oneway=no	
+-106337369	42852287	1560	108	2278	0	0	0	0	highway=secondary surface=paved oneway=no	
+-106334373	42856453	1561	590	1871	0	0	0	0	highway=secondary surface=asphalt oneway=no	highway=traffic_signals
+-106333926	42857173	1560	90	3709	0	0	0	0	highway=secondary surface=asphalt oneway=no	highway=traffic_signals
+-106333256	42858173	1559	124	5214	0	0	0	0	highway=secondary surface=asphalt oneway=no	highway=traffic_signals
+-106333101	42858410	1559	30	9600	0	0	0	0	reversedirection=yes highway=primary oneway=no	highway=traffic_signals
+-106339412	42867750	1616	1466	1353	0	0	0	0	highway=secondary surface=asphalt oneway=no	
+-106337924	42867587	1619	123	6669	0	0	0	0	highway=service	
+-106337600	42867157	1619	55	5202	0	0	0	0	reversedirection=yes highway=service	
+-106337497	42867210	1620	346	8580	0	0	0	0	highway=service	
+-106339412	42867750	1616	202	4229	0	0	0	0	reversedirection=yes highway=service	
+-106339155	42869234	1613	167	3083	0	0	0	0	highway=secondary surface=asphalt oneway=no	highway=stop
+-106339140	42869328	1613	11	2587	0	0	0	0	highway=secondary surface=asphalt oneway=no	
+-106343999	42867923	1617	433	2124	0	0	0	0	reversedirection=yes highway=secondary surface=asphalt oneway=no	highway=traffic_signals
+-106347913	42866475	1617	360	1781	0	0	0	0	highway=trunk surface=asphalt oneway=no	
+-106398111	42862140	1587	4134	937	0	0	0	0	highway=motorway oneway=yes	
+-106403441	42862430	1595	464	1529	0	0	0	0	highway=motorway_link oneway=yes	
+-106760868	43025286	1691	34866	1194	0	0	0	0	highway=primary surface=paved	
+-107018401	43034115	1718	21344	1151	0	0	0	0	highway=primary	
+-107310586	43087417	1870	24817	1149	0	0	0	0	highway=primary surface=paved	
+-107501489	43142519	1762	17448	1150	0	0	0	0	highway=primary	highway=turning_circle
+-107855719	43177819	1600	29458	1153	0	0	0	0	highway=primary	highway=turning_circle
+-108097877	43235886	1481	21437	1155	0	0	0	0	highway=primary	railway=level_crossing
+-108098323	43235825	1481	37	1155	0	0	0	0	highway=primary	
+-108117587	43235550	1474	1573	2100	0	0	0	0	reversedirection=yes highway=primary	
+-108380747	43054850	1512	31663	2008	0	0	0	0	highway=primary	
+-108380617	43041297	1510	1509	1390	0	0	0	0	reversedirection=yes highway=primary surface=asphalt	highway=traffic_signals
+-108380601	43033995	1514	815	1707	0	0	0	0	reversedirection=yes highway=primary surface=asphalt	highway=traffic_signals
+-108380621	43030409	1514	400	1698	0	0	0	0	reversedirection=yes highway=primary surface=asphalt	highway=traffic_signals
+-108380656	43026773	1512	411	2197	0	0	0	0	reversedirection=yes highway=primary surface=asphalt	highway=traffic_signals
+-108380609	43024652	1511	238	2238	0	0	0	0	reversedirection=yes highway=primary surface=asphalt	highway=traffic_signals
+-108382020	43024650	1511	3	15848	0	0	0	0	highway=primary maxspeed=50	
+-108380609	43024652	1511	3	22558	0	0	0	0	reversedirection=yes highway=primary maxspeed=50	highway=traffic_signals
+-108380585	43019450	1505	581	1881	0	0	0	0	reversedirection=yes highway=primary	highway=traffic_signals
+-108580197	42909256	1545	22707	1185	0	0	0	0	reversedirection=yes highway=primary	
+-108588433	42900507	1551	1323	2053	0	0	0	0	reversedirection=yes highway=primary maxspeed=50	
+-108723284	42831773	1643	15088	1941	0	0	0	0	reversedirection=yes highway=primary	
+-108724483	42831461	1641	116	3337	0	0	0	0	highway=primary_link oneway=yes	
+-108744895	42839002	1638	2061	1938	0	0	0	0	highway=primary	highway=traffic_signals
+-108745707	42841637	1633	306	1959	0	0	0	0	highway=primary	
+-108746867	42840745	1634	136	3892	0	0	0	0	highway=residential	
