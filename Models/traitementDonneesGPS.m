@@ -55,8 +55,8 @@ clc, clear all, close all
 % fichier_cible = 'C:\Users\club\Git\StrategieCourseASC2016\TrackPMGInner10m.mat'
 
 % CoTA (FSGP 2017)
-fichier_source = 'C:\Users\Mégane Lavallée\Downloads\brouter.csv';
-fichier_cible = 'C:\Users\Mégane Lavallée\Documents\Éclipse\Stratégie\StrategieCourse\Data\ASC2018_Stage1_speed.mat';
+fichier_source = 'C:\Users\Mégane Lavallée\Documents\Éclipse\Stratégie\StrategieCourse\OLD\Motorsport_Park_Hasting-data.csv';
+fichier_cible = 'C:\Users\Mégane Lavallée\Documents\Éclipse\Stratégie\StrategieCourse\Data\M.mat';
 
 % ***************************** IMPORTANT ****************************************
 % Ajuster la distance maximale entre chaque point si nécessaire (Standard : 100 m)

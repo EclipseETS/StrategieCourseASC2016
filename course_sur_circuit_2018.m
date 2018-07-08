@@ -17,14 +17,7 @@ clear all%, close all, clc
 %% Ajoute les repertoires necessaires au chemin de recherche du projet
 addpath('Data');
 addpath('Models');
-addpath('Outils');
-
-%% Importation des donnees du circuit a realiser (Voir "traitementDonneesGPS.m")
-%load('etapesASC2016_continuous.mat')
-%load('TrackPMGInner10m.mat')
-% load('Data/FSGP2017_CircuitOfTheAmericas10m.mat'); % Octave
-%load('PittRaceNorthTrack10m.mat')
-% newParcours = newParcours;
+% addpath('Outils');
 
 %% Charge tous les parametres de la simulation
 run('Models/parameterGeneratorEclipseX.m');

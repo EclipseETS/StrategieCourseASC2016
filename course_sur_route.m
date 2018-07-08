@@ -19,21 +19,21 @@ clear all%, close all, clc
 %% Ajoute les repertoires necessaires au chemin de recherche du projet
 addpath('Data');
 addpath('Models');
-addpath('Outils');
+% addpath('Outils'); Pas necessaire
 
 %% Vérification de la présence des limites de vitesse dans le fichier du parcours
-contraintes.noSpeedLimit = 0;
-try
-    newParcours.SpeedLimit;
-catch E
-    contraintes.noSpeedLimit = 1;
-end
+% contraintes.noSpeedLimit = 0;
+% try
+%     newParcours.SpeedLimit;
+% catch E
+%     contraintes.noSpeedLimit = 1;
+% end
 
 %% Charge tous les paramètres de la simulation5
 run('Models/parameterGeneratorEclipseX.m')
 
-etat_course.index_depart = round(.47 * length(newParcours.distance)); % Départ à un pourcentage du parcours
-routeLog = routeSimulator(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
+etat_course.index_depart = 2;%round(.47 * length(newParcours.distance)); % Départ à un pourcentage du parcours
+routeLog = routeSimulatorMeg(newParcours, etat_course, cellModel, strategy, Eclipse, constantes, reglement, meteo);
 
 routeLog.puissance_elec_traction(isnan(routeLog.puissance_elec_traction)) = 0;
 
@@ -73,51 +73,51 @@ fprintf('Puissance net moyenne %3.2f W \n \n \n', puissance.net_moy);
 % % fprintf('Puissance moyenne %3.2f W \n', puissance_moyenne_totale);
 
 
-% 
-% h1 = figure;
-% hold on, grid on, title('FSGP 2016')
-% h2 = figure;
-% hold on, grid on, title('FSGP 2016')
-% 
-% for k = 1:length(routeLog)
-% figure(h1)
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_elec_totale, 'b')
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissancePV, 'r')
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_moteurs, 'k')
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*1000, '--m')
-% 
-% figure(h2)
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*100, '--m')
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_vitesse*3.6, 'g')
-% plot(newParcours.distance + (k-1)*newParcours.distance(end), newParcours.SpeedLimit, 'r')
-% 
-% % plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_accel*36, 'r')
-% 
-% end
-% 
-% figure(h1)
-% xlabel('distance (km)')
-% ylabel('puissance (W)')
-% legend('ELE', 'PV', 'MEC', 'SoC');
-% figure(h2)
-% xlabel('distance (km)')
-% legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
-% 
-% 
-% 
-% % A = newParcours.latitude;
-% % B = newParcours.longitude;
-% % C = routeLog(1).puissance_elec_totale;
-% % D = routeLog(1).energie_fournie_totale ./ routeLog(1).Vbatt;
-% % E = routeLog(1).temps_cumulatif;
-% % save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
-% 
-% 
-% figure, hold on, grid on
-% plot(newParcours.distance, newParcours.altitude);
-% 
-% figure, hold on, grid on
-% plot3(newParcours.longitude, newParcours.latitude, newParcours. altitude)
-% 
-% figure, hold on, grid on
-% plot(newParcours.distance)
+
+h1 = figure;
+hold on, grid on, title('FSGP 2016')
+h2 = figure;
+hold on, grid on, title('FSGP 2016')
+
+for k = 1:length(routeLog)
+figure(h1)
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_elec_totale, 'b')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissancePV, 'r')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.puissance_moteurs, 'k')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*1000, '--m')
+
+figure(h2)
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.SoC*100, '--m')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_vitesse*3.6, 'g')
+plot(newParcours.distance + (k-1)*newParcours.distance(end), newParcours.SpeedLimit, 'r')
+
+% plot(newParcours.distance + (k-1)*newParcours.distance(end), routeLog.profil_accel*36, 'r')
+
+end
+
+figure(h1)
+xlabel('distance (km)')
+ylabel('puissance (W)')
+legend('ELE', 'PV', 'MEC', 'SoC');
+figure(h2)
+xlabel('distance (km)')
+legend('SoC', 'Vitesse (km/h)', 'Limite de vitesse');
+
+
+
+% A = newParcours.latitude;
+% B = newParcours.longitude;
+% C = routeLog(1).puissance_elec_totale;
+% D = routeLog(1).energie_fournie_totale ./ routeLog(1).Vbatt;
+% E = routeLog(1).temps_cumulatif;
+% save('dataTour50kmh.mat', 'A', 'B', 'C', 'D', 'E')
+
+
+figure, hold on, grid on
+plot(newParcours.distance, newParcours.altitude);
+
+figure, hold on, grid on
+plot3(newParcours.longitude, newParcours.latitude, newParcours. altitude)
+
+figure, hold on, grid on
+plot(newParcours.distance)

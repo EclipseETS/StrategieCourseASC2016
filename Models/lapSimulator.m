@@ -67,16 +67,10 @@ for nb_iterations=2:nbPoints
     end
     direction(nb_iterations) = azimuth(parcours.latitude(nb_iterations), parcours.longitude(nb_iterations), parcours.latitude(nb_iterations-1), parcours.longitude(nb_iterations-1));
     vitesse_ecoulement_air = profil_vitesse(nb_iterations-1) + meteo.vitesse_vent(index_meteo) * cosd(meteo.direction_vent(index_meteo) - direction(nb_iterations));
-    % ^ Verifier si on peut trouver un API de vent et l'inclure ici (peut
-    % être complexe a faire...
-    
-    
+   
     % Calcul des focres appliquées sur le véhicule
     force_g(nb_iterations) = sin(atan(parcours.slope(nb_iterations)/100))*Eclipse.masse_totale*constantes.const_grav; % fg = sin(pente)*m*g    
     force_aero(nb_iterations) = 0.5*meteo.mv_air(index_meteo)*Eclipse.coef_trainee*Eclipse.aire_frontale*vitesse_ecoulement_air.^2; % fa = 1/2*rho*Cx*S*V^2
-%     force_aero(nb_iterations) = 0.5*meteo.mv_air*Eclipse.coef_trainee*Eclipse.aire_frontale*profil_vitesse(nb_iterations-1).^2; 
-%     force_aero(nb_iterations) = 0.5*constantes.mv_air*Eclipse.coef_trainee*Eclipse.aire_frontale*profil_vitesse(nb_iterations-1).^2; % fa = 1/2*rho*Cx*S*V^2
-%     force_drag_roues(nb_iterations) = Eclipse.nb_roue * 0.5 * constantes.mv_air * profil_vitesse(nb_iterations-1).^2 * ((Eclipse.largeur_pneu*Eclipse.hauteur_roue^3)/(2 * Eclipse.rayon_roue^2));     % ****** À VÉRIFIER **********
     force_friction(nb_iterations) = Eclipse.frottement; % ****** À VÉRIFIER **********       **********       **********        **********     **********       % ****** À VÉRIFIER **********
     force_opposition_tot(nb_iterations) = force_g(nb_iterations)+force_aero(nb_iterations)+force_friction(nb_iterations); % +force_drag_roues(nb_iterations) ********** Drag des roues inclus dans la trainée aéro totale
     
@@ -103,7 +97,6 @@ for nb_iterations=2:nbPoints
             temps_interval(nb_iterations) = sqrt(2.*parcours.distance_interval(nb_iterations)./abs(profil_accel(nb_iterations)));
         else
             temps_interval(nb_iterations) = parcours.distance_interval(nb_iterations) / (profil_vitesse(nb_iterations-1)+ profil_accel(nb_iterations)/2 );
-            %temps_interval(nb_iterations) = sqrt(2.*parcours.distance_interval(nb_iterations)./abs(profil_accel(nb_iterations)));
         end
     else
         temps_interval(nb_iterations) = parcours.distance_interval(nb_iterations)/profil_vitesse(nb_iterations-1);
@@ -111,24 +104,18 @@ for nb_iterations=2:nbPoints
     profil_vitesse(nb_iterations) = profil_vitesse(nb_iterations-1)+profil_accel(nb_iterations).*temps_interval(nb_iterations);
     temps_cumulatif(nb_iterations) = temps_cumulatif(nb_iterations-1) + temps_interval(nb_iterations); % s
     heure = etat_course.heure_depart + temps_cumulatif(nb_iterations)/(24*3600);   % On converti le temps (secondes) en fraction de journée de 24 heures
-
-%    densite_de_puissance_incidente = solarradiationInstant(zeros(2), ones(1,2)*parcours.latitude(nb_iterations),1,0.2,heure); % solarradiationInstant(dem,lat,cs,r, currentDate) Voir le fichier solarradiationInstant.m
-% 	[puissancePV_sansNuages Elevation(nb_iterations)] = solarArrayModel(heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
-% 	puissancePV(nb_iterations) = meteo.couverture_ciel(index_meteo) .* puissancePV_sansNuages;
 %%  
     warning ('off')
     heureArrondieVec = datevec(heure);
     heureArrondie = ceil(heureArrondieVec(4)/.5)*.5 ; % Heure arrondie aux 30 minutes
     heureArrondieVec = [floor(heureArrondie)  (mod(heureArrondie, 1))*60 0];
     
-%   heureArrondieVec = [hour(heureArrondie) (mod(heureArrondie, 1))*60 0];
     lapDateVec = datevec(etat_course.heure_depart, 'yyyy-mm-dd HH:MM:SS');
     lapTimeVec = datevec(datenum([lapDateVec(1:3) heureArrondieVec]), 'yyyy-mm-dd HH:SS:MM');
     
     lapDateVec = datevec(etat_course.heure_depart, 'yyyy-mm-dd HH:MM:SS');
     lapTimeVec = datevec(datenum([lapDateVec(1:3) heureArrondieVec]), 'yyyy-mm-dd HH:SS:MM');
-    
-    
+   
     indexPV = find(ismember (meteo.dateVec_irradiance, lapTimeVec, 'rows'));
     
     if isempty (indexPV) == 1
@@ -139,10 +126,7 @@ for nb_iterations=2:nbPoints
     puissancePV(nb_iterations) = irrandiance * Eclipse.SurfaceTotalePV * Eclipse.EfficaciteSunPowerBinH;
 
     warning ('on')
-%%    
-    %puissancePV(nb_iterations) = meteo.couverture_ciel(index_meteo) .* solarArrayModel(parcours.latitude(nb_iterations), parcours.longitude(nb_iterations), parcours.altitude(nb_iterations), parcours.slope(nb_iterations), heure, densite_de_puissance_incidente, sansSupport, meteo.sun_cycle_coef);
-    %energie_recuperee(nb_iterations) = puissancePV(nb_iterations) .* temps_interval(nb_iterations); % J
-    
+%%      
     % Calcul la force de traction appliquée par les moteurs (ne considère pas le freinage ni le regen)  % TODO : Ajouter le regen
     if profil_force_traction(nb_iterations) > 0 % Si les moteurs fournissent un couple de traction
         profil_force_moteurs(nb_iterations) = profil_force_traction(nb_iterations);

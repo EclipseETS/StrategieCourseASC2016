@@ -37,7 +37,7 @@ load('../Data/ASC2018_Stage1speed.mat')
 % Parcours.Longitude = newParcours.longitude(1);
 % Parcours.Latitude = newParcours.latitude(1);
 % run('sunForecast.m');    % Tentative de mettre à jour les prévisions solaires
-load('../Data/SunForecastFSGP2018-Jun-26.mat'); % Charge les meilleures prévisions solaires disponibles
+load('../Data/SunForecastFSGP2018-Jul-07.mat'); % Charge les meilleures prévisions solaires disponibles
 
 %% Constantes physiques 
 constantes.const_grav = 9.81;      % m/s^2
@@ -50,7 +50,7 @@ constantes.masse_molaire_air = 28.965338/1000; % kg/mol
 strategy.SoC_ini = 1;         % State of Charge actuel(%)
 strategy.SoC_min = 0.2;         % Final State of Charge (%)
 strategy.vitesse_min = 15/3.6;   % m/s (20 km/h)
-strategy.vitesse_moy = 75/3.6;   % m/s  *** VITESSE CIBLE ***
+strategy.vitesse_moy = 78/3.6;   % m/s  *** VITESSE CIBLE ***
 strategy.vitesse_max = 120/3.6;  % m/s (120 km/h)
 strategy.vitesse_ini = 0;        % m/s
 strategy.accel_nom = 0.1;        % m/s^2
@@ -59,10 +59,10 @@ strategy.decel_nom = -0.03;      % m/s^2
 
 
 %% Reglements de la FSGP 2018
-reglement.heure_depart = 10/24; % Depart a 9h00 CDT     (10h la premiere journee de la FSGP) (Actuellement a 13h15)
+reglement.heure_depart = 9/24; % Depart a 9h00 CDT     (10h la premiere journee de la FSGP) (Actuellement a 13h15)
 reglement.heure_arret = 18/24; % Arret a 18h00 CDT   (17h les deux dernieres journees de la FSGP)
 reglement.impound_out = 7/24; % Batterie disponible a partir de 7h00 CDT
-reglement.impound_in = 18/24; % Batterie non-disponible a partir de 20h00 CDT
+reglement.impound_in = 20/24; % Batterie non-disponible a partir de 20h00 CDT
 reglement.fsgp_fin_recharge_matin = 9/24; % Fin de la recharge du matin a 8h30 CDT
 
 
@@ -87,7 +87,7 @@ Eclipse.coef_trainee = 0.11; % Calculer le 10 juin 2018 chez PMG
 Eclipse.coef_roulement = 0.01 ; % Calculer le 10 juin 2018 chez PMG
 Eclipse.frottement = Eclipse.masse_totale * Eclipse.coef_roulement * constantes.const_grav;       % N - 
 Eclipse.rayon_roue = 0.2725;    % m                                        
-Eclipse.surface_solaire = 5.994;    % m^2
+% Eclipse.surface_solaire = 5.994;    % m^2
 Eclipse.nb_roue = 4;            % Nombre de roues
 Eclipse.largeur_pneu = 0.0635;    % m                              
 Eclipse.hauteur_roue = 2*Eclipse.rayon_roue;     % m             
@@ -109,7 +109,7 @@ Eclipse.Ecell_max = 4.2;    % V
 Eclipse.Ecell_min = 3.1;    % V
 Eclipse.Ccell = 3.4;     % Ah Valeur mesurée par JF juin 2018
 Eclipse.Crate_max = 2;
-Eclipse.Rcell = 0.125;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
+Eclipse.Rcell = 0.038;      % ohm (NRC18560B from http://lygte-info.dk/review/batteries2012/Common18650Summary%20UK.html) 
 Eclipse.Ebatt_max = Eclipse.Ecell_max*Eclipse.nb_cell_serie; % V max
 Eclipse.Ibatt_max = Eclipse.Crate_max*Eclipse.Ccell*Eclipse.nb_cell_para;   % Courant de la batterie à 2 C
 Eclipse.Ibatt_nom = Eclipse.Ccell*Eclipse.nb_cell_para;             % Courant de la batterie à 1 C
@@ -121,9 +121,9 @@ Eclipse.Battery_capacity = Eclipse.Ccell * Eclipse.nb_cell_total;   % kWh
 etat_course.journee = 1;
 etat_course.SoC_start = strategy.SoC_ini; % (%)
 etat_course.nbLap = 0;
-etat_course.nbLapMax = 1;
+etat_course.nbLapMax = 500;
 etat_course.vitesse_ini = 0; % m/s
-etat_course.heure_depart = datenum([2018,06,31,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
+etat_course.heure_depart = datenum([2018,07,10,reglement.heure_depart*24,0,0]); % Format de l'heure : [yyyy, mm, jj, hh, mm, ss]
 
 %% Moyenne de soleil
 Soleil.Debut_journee = datevec(etat_course.heure_depart) ; %[yyyy, mm, jj, hh, mm, ss]
@@ -156,8 +156,8 @@ Soleil.Moyenne_soleil_total = round(mean(Soleil.Moyenne_soleil));
 fprintf('L''energie moyenne recu du soleil est de %d W durant la journee\n', Soleil.Moyenne_soleil_total);
 % 
 %%
-% Graphique de l'ensoleillement
-% h1 = figure;
+% % Graphique de l'ensoleillement
+% Soleil.Figure = figure;
 % hold on, grid on, title('Taux d''ensoleillement')
-% figure(h1)
-% plot (Soleil.Demies_heures, Soleil.Moyenne_soleil)
+% figure(Soleil.Figure)
+% plot (Soleil.Demies_heures_impound, Soleil.Moyenne_soleil)
